@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-EcoNexus.Worker-49cd6881-7644-4378-8903-7e5992cf946c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EcoNexus.Application\EcoNexus.Application.csproj" />
+    <ProjectReference Include="..\EcoNexus.Infrastructure\EcoNexus.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EcoNexus.Api/EcoNexus.Api.csproj" />
+    <Project Path="src/EcoNexus.Application/EcoNexus.Application.csproj" />
+    <Project Path="src/EcoNexus.Contracts/EcoNexus.Contracts.csproj" />
+    <Project Path="src/EcoNexus.Domain/EcoNexus.Domain.csproj" />
+    <Project Path="src/EcoNexus.Infrastructure/EcoNexus.Infrastructure.csproj" />
+    <Project Path="src/EcoNexus.Worker/EcoNexus.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EcoNexus.ArchitectureTests/EcoNexus.ArchitectureTests.csproj" />
+    <Project Path="tests/EcoNexus.IntegrationTests/EcoNexus.IntegrationTests.csproj" />
+    <Project Path="tests/EcoNexus.UnitTests/EcoNexus.UnitTests.csproj" />
+  </Folder>
+</Solution>
