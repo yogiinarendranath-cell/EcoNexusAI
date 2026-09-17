@@ -1,0 +1,91 @@
+﻿# EcoNexus AI — Local development stack (SQL Server, API, Worker, Azurite)
+#
+# Usage (once Docker is installed):
+#   docker compose up -d          start all services
+#   docker compose logs -f api    tail API logs
+#   docker compose down           stop services
+#   docker compose down -v        stop and remove volumes (fresh DB)
+#
+# NOTE: this file is checked in but has not yet been executed. When Docker
+# Desktop is installed, run it once end-to-end and update this comment.
+
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: econexus-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "EcoNexus!Dev2026"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - econexus-sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - econexus-net
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    container_name: econexus-azurite
+    ports:
+      - "10000:10000"   # Blob
+      - "10001:10001"   # Queue
+      - "10002:10002"   # Table
+    volumes:
+      - econexus-azurite-data:/data
+    networks:
+      - econexus-net
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    image: econexus-api:dev
+    container_name: econexus-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__Default: "Server=sqlserver,1433;Database=EcoNexus;User Id=sa;Password=EcoNexus!Dev2026;TrustServerCertificate=True;Encrypt=False"
+      Storage__Blob__ConnectionString: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+    ports:
+      - "5067:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      azurite:
+        condition: service_started
+    networks:
+      - econexus-net
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    image: econexus-worker:dev
+    container_name: econexus-worker
+    environment:
+      DOTNET_ENVIRONMENT: "Development"
+      ConnectionStrings__Default: "Server=sqlserver,1433;Database=EcoNexus;User Id=sa;Password=EcoNexus!Dev2026;TrustServerCertificate=True;Encrypt=False"
+      Storage__Blob__ConnectionString: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      azurite:
+        condition: service_started
+    networks:
+      - econexus-net
+
+volumes:
+  econexus-sqlserver-data:
+  econexus-azurite-data:
+
+networks:
+  econexus-net:
+    driver: bridge

@@ -1,0 +1,46 @@
+﻿# ============================================================================
+# EcoNexus API — multi-stage Dockerfile
+# ============================================================================
+# Build context is the repository root (see docker-compose.yml `context: .`).
+# ============================================================================
+
+# ---- Stage 1: build ----
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# Copy solution + props files first (better layer caching for restore)
+COPY EcoNexus.slnx ./
+COPY Directory.Build.props ./
+COPY Directory.Packages.props ./
+
+# Copy all csproj files to cache restore layer
+COPY src/EcoNexus.Api/EcoNexus.Api.csproj src/EcoNexus.Api/
+COPY src/EcoNexus.Application/EcoNexus.Application.csproj src/EcoNexus.Application/
+COPY src/EcoNexus.Contracts/EcoNexus.Contracts.csproj src/EcoNexus.Contracts/
+COPY src/EcoNexus.Domain/EcoNexus.Domain.csproj src/EcoNexus.Domain/
+COPY src/EcoNexus.Infrastructure/EcoNexus.Infrastructure.csproj src/EcoNexus.Infrastructure/
+
+RUN dotnet restore src/EcoNexus.Api/EcoNexus.Api.csproj
+
+# Copy source and publish
+COPY src/ src/
+RUN dotnet publish src/EcoNexus.Api/EcoNexus.Api.csproj \
+        -c Release \
+        -o /app/publish \
+        --no-restore \
+        /p:UseAppHost=false
+
+# ---- Stage 2: runtime ----
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+
+# Non-root user for security
+RUN adduser --disabled-password --gecos "" appuser
+USER appuser
+
+COPY --from=build /app/publish .
+
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "EcoNexus.Api.dll"]

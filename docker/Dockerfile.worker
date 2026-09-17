@@ -1,0 +1,37 @@
+﻿# ============================================================================
+# EcoNexus Worker — multi-stage Dockerfile
+# ============================================================================
+
+# ---- Stage 1: build ----
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY EcoNexus.slnx ./
+COPY Directory.Build.props ./
+COPY Directory.Packages.props ./
+
+COPY src/EcoNexus.Worker/EcoNexus.Worker.csproj src/EcoNexus.Worker/
+COPY src/EcoNexus.Application/EcoNexus.Application.csproj src/EcoNexus.Application/
+COPY src/EcoNexus.Contracts/EcoNexus.Contracts.csproj src/EcoNexus.Contracts/
+COPY src/EcoNexus.Domain/EcoNexus.Domain.csproj src/EcoNexus.Domain/
+COPY src/EcoNexus.Infrastructure/EcoNexus.Infrastructure.csproj src/EcoNexus.Infrastructure/
+
+RUN dotnet restore src/EcoNexus.Worker/EcoNexus.Worker.csproj
+
+COPY src/ src/
+RUN dotnet publish src/EcoNexus.Worker/EcoNexus.Worker.csproj \
+        -c Release \
+        -o /app/publish \
+        --no-restore \
+        /p:UseAppHost=false
+
+# ---- Stage 2: runtime ----
+FROM mcr.microsoft.com/dotnet/runtime:10.0 AS runtime
+WORKDIR /app
+
+RUN adduser --disabled-password --gecos "" appuser
+USER appuser
+
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "EcoNexus.Worker.dll"]

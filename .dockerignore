@@ -1,0 +1,45 @@
+﻿# Build context exclusions — keeps image build fast and small
+
+# .NET build artifacts
+**/bin/
+**/obj/
+**/out/
+**/publish/
+
+# IDE
+**/.vs/
+**/.vscode/
+**/*.user
+**/*.suo
+
+# Git
+.git/
+.gitignore
+**/.gitattributes
+
+# Logs and data
+**/logs/
+*.log
+*.mdf
+*.ldf
+
+# Docs (not needed in image)
+docs/
+
+# Infrastructure as code (added later)
+infrastructure/
+
+# Tests (not needed at runtime)
+tests/
+
+# Node / React (added later)
+node_modules/
+web/
+
+# Compose and Docker files themselves
+docker-compose*.yml
+docker/
+.dockerignore
+
+# CI
+.github/
