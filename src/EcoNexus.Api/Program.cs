@@ -1,5 +1,8 @@
 ﻿using EcoNexus.Api.Middleware;
+using EcoNexus.Infrastructure.Identity;
+using EcoNexus.Infrastructure.Identity.Seeding;
 using EcoNexus.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -36,6 +39,40 @@ builder.Services.AddDbContext<EcoNexusDbContext>(options =>
             maxRetryDelay: TimeSpan.FromSeconds(5),
             errorNumbersToAdd: null);
     }));
+
+// ============================================================
+// Identity — JWT-friendly registration (no cookie handlers)
+// ============================================================
+builder.Services
+    .AddIdentityCore<ApplicationUser>(options =>
+    {
+        // Password policy
+        options.Password.RequiredLength = 8;
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequiredUniqueChars = 4;
+
+        // User policy
+        options.User.RequireUniqueEmail = true;
+
+        // Lockout policy
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.AllowedForNewUsers = true;
+
+        // Sign-in policy
+        options.SignIn.RequireConfirmedEmail = false;
+    })
+    .AddRoles<ApplicationRole>()
+    .AddEntityFrameworkStores<EcoNexusDbContext>()
+    .AddDefaultTokenProviders();
+
+// ============================================================
+// Hosted services
+// ============================================================
+builder.Services.AddHostedService<RoleSeeder>();
 
 // ============================================================
 // Services

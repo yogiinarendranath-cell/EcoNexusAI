@@ -1,14 +1,18 @@
 ﻿using EcoNexus.Domain.Entities;
+using EcoNexus.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcoNexus.Infrastructure.Persistence;
 
 /// <summary>
 /// The EF Core DbContext for EcoNexus AI.
-/// Exposes the aggregate roots as DbSets and applies all
-/// IEntityTypeConfiguration implementations found in this assembly.
+/// Inherits from IdentityDbContext so ASP.NET Core Identity tables (users,
+/// roles, claims, etc.) are managed by the same context as our domain entities.
+/// This ensures a single transaction boundary and one migration history.
 /// </summary>
-public sealed class EcoNexusDbContext : DbContext
+public sealed class EcoNexusDbContext
+    : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
 {
     public EcoNexusDbContext(DbContextOptions<EcoNexusDbContext> options)
         : base(options)
@@ -23,13 +27,14 @@ public sealed class EcoNexusDbContext : DbContext
     public DbSet<Alert> Alerts => Set<Alert>();
     public DbSet<CitizenReport> CitizenReports => Set<CitizenReport>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        ArgumentNullException.ThrowIfNull(modelBuilder);
+        ArgumentNullException.ThrowIfNull(builder);
 
-        // Apply all IEntityTypeConfiguration<T> in this assembly.
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(EcoNexusDbContext).Assembly);
+        // 1. Apply ASP.NET Core Identity's configurations first.
+        base.OnModelCreating(builder);
 
-        base.OnModelCreating(modelBuilder);
+        // 2. Apply our own IEntityTypeConfiguration<T> classes.
+        builder.ApplyConfigurationsFromAssembly(typeof(EcoNexusDbContext).Assembly);
     }
 }
