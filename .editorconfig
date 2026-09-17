@@ -1,4 +1,4 @@
-# EditorConfig for EcoNexus AI
+﻿# EditorConfig for EcoNexus AI
 root = true
 
 [*]
@@ -74,3 +74,4 @@ dotnet_diagnostic.IDE0058.severity = none
 dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.CA1303.severity = none
 dotnet_diagnostic.CA1810.severity = none
+dotnet_diagnostic.CA1707.severity = none
