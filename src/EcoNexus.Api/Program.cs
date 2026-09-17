@@ -1,6 +1,25 @@
-using EcoNexus.Api.Middleware;
+﻿using EcoNexus.Api.Middleware;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ============================================================
+// Logging — Serilog
+// ============================================================
+// Replaces the default Microsoft logger. Structured logs to
+// console and rolling files.
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console()
+        .WriteTo.File(
+            path: "logs/econexus-api-.log",
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 30);
+});
 
 // ============================================================
 // Services
@@ -27,9 +46,19 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
-app.Run();
+try
+{
+    Log.Information("Starting EcoNexus API");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "EcoNexus API terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
