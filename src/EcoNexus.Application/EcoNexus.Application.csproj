@@ -2,6 +2,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EcoNexus.Domain\EcoNexus.Domain.csproj" />
+    <ProjectReference Include="..\EcoNexus.Contracts\EcoNexus.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
   </ItemGroup>
 
   <PropertyGroup>
