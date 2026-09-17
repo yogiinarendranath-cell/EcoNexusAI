@@ -77,6 +77,7 @@ dotnet_diagnostic.CA1303.severity = none
 dotnet_diagnostic.CA1810.severity = none
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.CA1001.severity = none
 
 # ==========================================================
 # EF Core generated code — relax style/analyzer rules
