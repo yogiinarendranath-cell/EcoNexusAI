@@ -1,0 +1,54 @@
+﻿<Project>
+
+  <!--
+    Directory.Build.props
+    Applied automatically by MSBuild to every project in this repository.
+    Only put cross-cutting settings here. Project-specific settings belong in
+    each .csproj.
+  -->
+
+  <PropertyGroup>
+    <!-- Language / framework -->
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Build behaviour -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+
+    <!--
+      Workaround for https://github.com/dotnet/roslyn/issues/41640
+      IDE0005 (remove unnecessary usings) requires XML doc parsing to be enabled
+      for build-time execution. The NoWarn suppresses "missing XML docs" warnings
+      for now — we'll turn them on when we start writing public APIs.
+    -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
+
+    <!-- Assembly metadata -->
+    <Company>EcoNexus AI</Company>
+    <Product>EcoNexus AI</Product>
+    <Version>0.1.0</Version>
+    <Authors>Narendra N</Authors>
+
+    <!-- NuGet audit: fail build on high/critical CVEs -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>high</NuGetAuditLevel>
+  </PropertyGroup>
+
+  <!--
+    Test projects inherit a few extra conveniences. Detected by naming
+    convention (project names ending in ".Tests").
+  -->
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+</Project>

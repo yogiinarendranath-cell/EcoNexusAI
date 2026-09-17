@@ -1,10 +1,11 @@
-﻿namespace EcoNexus.ArchitectureTests;
+﻿using Xunit;
+
+namespace EcoNexus.ArchitectureTests;
 
 public class UnitTest1
 {
     [Fact]
     public void Test1()
     {
-
     }
 }
