@@ -1,9 +1,11 @@
 ﻿using System.Text;
 using EcoNexus.Api.Middleware;
 using EcoNexus.Application.Abstractions.Identity;
+using EcoNexus.Application.Auth.Validators;
 using EcoNexus.Infrastructure.Identity;
 using EcoNexus.Infrastructure.Identity.Seeding;
 using EcoNexus.Infrastructure.Persistence;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -83,6 +85,7 @@ builder.Services
     })
     .AddRoles<ApplicationRole>()
     .AddEntityFrameworkStores<EcoNexusDbContext>()
+    .AddSignInManager()
     .AddDefaultTokenProviders();
 
 // ============================================================
@@ -97,6 +100,7 @@ builder.Services
     {
         options.RequireHttpsMetadata = false;
         options.SaveToken = true;
+        options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -107,8 +111,8 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromSeconds(30),
-            RoleClaimType = System.Security.Claims.ClaimTypes.Role,
-            NameClaimType = System.Security.Claims.ClaimTypes.Name
+            RoleClaimType = "role",
+            NameClaimType = "sub"
         };
     });
 
@@ -118,6 +122,11 @@ builder.Services.AddAuthorization();
 // Application services
 // ============================================================
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
+
+// ============================================================
+// FluentValidation — auto-register all validators
+// ============================================================
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
 // ============================================================
 // Hosted services
