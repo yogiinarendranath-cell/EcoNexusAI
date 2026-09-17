@@ -16,7 +16,6 @@ public sealed class WasteStationConfiguration : IEntityTypeConfiguration<WasteSt
 
         // ---- Value objects ----
 
-        // StationCode <-> string
         builder.Property(s => s.Code)
             .HasConversion(
                 code => code.Value,
@@ -29,7 +28,6 @@ public sealed class WasteStationConfiguration : IEntityTypeConfiguration<WasteSt
             .IsUnique()
             .HasDatabaseName("UX_WasteStations_Code");
 
-        // Location -> Owned entity with Latitude / Longitude
         builder.OwnsOne(s => s.Location, location =>
         {
             location.Property(l => l.Latitude).HasColumnName("Latitude").IsRequired();
@@ -38,7 +36,6 @@ public sealed class WasteStationConfiguration : IEntityTypeConfiguration<WasteSt
 
         builder.Navigation(s => s.Location).IsRequired();
 
-        // Weight -> double (kilograms)
         builder.Property(s => s.Capacity)
             .HasConversion(
                 weight => weight.Kilograms,
@@ -46,7 +43,6 @@ public sealed class WasteStationConfiguration : IEntityTypeConfiguration<WasteSt
             .HasColumnName("CapacityKilograms")
             .IsRequired();
 
-        // FillLevel -> double (percent)
         builder.Property(s => s.CurrentFill)
             .HasConversion(
                 fill => fill.Percent,
@@ -54,7 +50,6 @@ public sealed class WasteStationConfiguration : IEntityTypeConfiguration<WasteSt
             .HasColumnName("CurrentFillPercent")
             .IsRequired();
 
-        // ---- Enums as strings ----
         builder.Property(s => s.PrimaryCategory)
             .HasConversion<string>()
             .HasColumnName("PrimaryCategory")
@@ -70,20 +65,18 @@ public sealed class WasteStationConfiguration : IEntityTypeConfiguration<WasteSt
         builder.HasIndex(s => s.Status)
             .HasDatabaseName("IX_WasteStations_Status");
 
-        // ---- Timestamps ----
         builder.Property(s => s.LastUpdatedAt).HasColumnName("LastUpdatedAt").IsRequired();
         builder.Property(s => s.LastCollectedAt).HasColumnName("LastCollectedAt");
 
         // ---- Child collection: readings ----
-        // Configure via the backing field. The FK is a shadow property
-        // managed by EF Core.
-        builder.Metadata
-            .FindNavigation(nameof(WasteStation.Readings))!
-            .SetPropertyAccessMode(PropertyAccessMode.Field);
-
-        builder.HasMany(typeof(StationReading), "_readings")
+        // Configure using the public navigation; EF Core discovers the
+        // private backing field '_readings' automatically.
+        builder.HasMany(s => s.Readings)
             .WithOne()
             .HasForeignKey("StationId")
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(s => s.Readings)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }
