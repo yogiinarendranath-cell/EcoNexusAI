@@ -26,6 +26,7 @@ public sealed class EcoNexusDbContext
     public DbSet<CollectionJob> CollectionJobs => Set<CollectionJob>();
     public DbSet<Alert> Alerts => Set<Alert>();
     public DbSet<CitizenReport> CitizenReports => Set<CitizenReport>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

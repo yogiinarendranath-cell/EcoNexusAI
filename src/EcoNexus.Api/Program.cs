@@ -1,9 +1,14 @@
-﻿using EcoNexus.Api.Middleware;
+﻿using System.Text;
+using EcoNexus.Api.Middleware;
+using EcoNexus.Application.Abstractions.Identity;
 using EcoNexus.Infrastructure.Identity;
 using EcoNexus.Infrastructure.Identity.Seeding;
 using EcoNexus.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,9 +46,22 @@ builder.Services.AddDbContext<EcoNexusDbContext>(options =>
     }));
 
 // ============================================================
+// Time abstraction
+// ============================================================
+builder.Services.AddSingleton(TimeProvider.System);
+
+// ============================================================
 // Data Protection (required by Identity token providers)
 // ============================================================
 builder.Services.AddDataProtection();
+
+// ============================================================
+// JWT settings binding
+// ============================================================
+builder.Services
+    .AddOptions<JwtSettings>()
+    .Bind(builder.Configuration.GetSection(JwtSettings.SectionName))
+    .ValidateOnStart();
 
 // ============================================================
 // Identity — JWT-friendly registration (no cookie handlers)
@@ -51,23 +69,16 @@ builder.Services.AddDataProtection();
 builder.Services
     .AddIdentityCore<ApplicationUser>(options =>
     {
-        // Password policy
         options.Password.RequiredLength = 8;
         options.Password.RequireDigit = true;
         options.Password.RequireLowercase = true;
         options.Password.RequireUppercase = true;
         options.Password.RequireNonAlphanumeric = true;
         options.Password.RequiredUniqueChars = 4;
-
-        // User policy
         options.User.RequireUniqueEmail = true;
-
-        // Lockout policy
         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
         options.Lockout.MaxFailedAccessAttempts = 5;
         options.Lockout.AllowedForNewUsers = true;
-
-        // Sign-in policy
         options.SignIn.RequireConfirmedEmail = false;
     })
     .AddRoles<ApplicationRole>()
@@ -75,22 +86,71 @@ builder.Services
     .AddDefaultTokenProviders();
 
 // ============================================================
+// JWT Bearer authentication
+// ============================================================
+var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()
+    ?? throw new InvalidOperationException("JWT settings are not configured.");
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwtSettings.Audience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(30),
+            RoleClaimType = System.Security.Claims.ClaimTypes.Role,
+            NameClaimType = System.Security.Claims.ClaimTypes.Name
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// ============================================================
+// Application services
+// ============================================================
+builder.Services.AddScoped<ITokenService, JwtTokenService>();
+
+// ============================================================
 // Hosted services
 // ============================================================
 builder.Services.AddHostedService<RoleSeeder>();
 
 // ============================================================
-// Services
+// Controllers + Swagger
 // ============================================================
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.OpenApiInfo
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "EcoNexus AI API",
         Version = "v1",
         Description = "AI-Powered Smart Waste & Recycling Network"
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Paste your JWT access token here. Swagger will send it as `Authorization: Bearer {token}`."
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document, null)] = new List<string>()
     });
 });
 
@@ -117,7 +177,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.MapGet("/api/v1/ping", () => Results.Ok(new
