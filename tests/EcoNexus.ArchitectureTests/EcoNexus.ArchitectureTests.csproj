@@ -3,6 +3,7 @@
   <ItemGroup>
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NetArchTest.Rules" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
@@ -10,6 +11,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\EcoNexus.Domain\EcoNexus.Domain.csproj" />
     <ProjectReference Include="..\..\src\EcoNexus.Application\EcoNexus.Application.csproj" />
+    <ProjectReference Include="..\..\src\EcoNexus.Contracts\EcoNexus.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\EcoNexus.Infrastructure\EcoNexus.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
