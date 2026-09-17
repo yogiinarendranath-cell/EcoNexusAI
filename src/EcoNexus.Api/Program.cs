@@ -41,6 +41,11 @@ builder.Services.AddDbContext<EcoNexusDbContext>(options =>
     }));
 
 // ============================================================
+// Data Protection (required by Identity token providers)
+// ============================================================
+builder.Services.AddDataProtection();
+
+// ============================================================
 // Identity — JWT-friendly registration (no cookie handlers)
 // ============================================================
 builder.Services
