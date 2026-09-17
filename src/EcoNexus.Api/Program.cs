@@ -1,4 +1,6 @@
 ﻿using EcoNexus.Api.Middleware;
+using EcoNexus.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,22 @@ builder.Host.UseSerilog((context, services, configuration) =>
             rollingInterval: RollingInterval.Day,
             retainedFileCountLimit: 30);
 });
+
+// ============================================================
+// Database — EF Core
+// ============================================================
+var connectionString = builder.Configuration.GetConnectionString("Default")
+    ?? throw new InvalidOperationException("Connection string 'Default' is not configured.");
+
+builder.Services.AddDbContext<EcoNexusDbContext>(options =>
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.MigrationsAssembly(typeof(EcoNexusDbContext).Assembly.FullName);
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 3,
+            maxRetryDelay: TimeSpan.FromSeconds(5),
+            errorNumbersToAdd: null);
+    }));
 
 // ============================================================
 // Services
@@ -60,7 +78,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-// Versioned ping endpoint — template for /api/v1/* routes
 app.MapGet("/api/v1/ping", () => Results.Ok(new
 {
     service = "EcoNexus.Api",
