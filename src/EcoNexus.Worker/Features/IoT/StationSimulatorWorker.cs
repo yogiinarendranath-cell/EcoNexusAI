@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Options;
-using EcoNexus.Domain.Entities;
-using EcoNexus.Application.Abstractions.Persistence;
+﻿using EcoNexus.Application.Abstractions.Persistence;
 using EcoNexus.Application.Features.Stations.RecordStationReading;
 using EcoNexus.Contracts.Stations;
+using EcoNexus.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace EcoNexus.Worker.Features.IoT;
 
@@ -12,24 +12,25 @@ namespace EcoNexus.Worker.Features.IoT;
 /// records them via the same MediatR command the HTTP API uses. This keeps
 /// domain validation, logging, and business rules consistent between the
 /// simulator and real clients.
+///
+/// Because this is a singleton hosted service, scoped services
+/// (repository, mediator, DbContext) are resolved inside a per-tick
+/// scope rather than injected directly.
 /// </summary>
 public sealed class StationSimulatorWorker : BackgroundService
 {
-    private readonly IWasteStationRepository _repository;
-    private readonly IMediator _mediator;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ReadingGenerator _generator;
     private readonly IOptions<StationSimulatorOptions> _options;
     private readonly ILogger<StationSimulatorWorker> _logger;
 
     public StationSimulatorWorker(
-        IWasteStationRepository repository,
-        IMediator mediator,
+        IServiceScopeFactory scopeFactory,
         ReadingGenerator generator,
         IOptions<StationSimulatorOptions> options,
         ILogger<StationSimulatorWorker> logger)
     {
-        _repository = repository;
-        _mediator = mediator;
+        _scopeFactory = scopeFactory;
         _generator = generator;
         _options = options;
         _logger = logger;
@@ -58,7 +59,6 @@ public sealed class StationSimulatorWorker : BackgroundService
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
-                // Graceful shutdown — exit loop.
                 break;
             }
             catch (Exception ex)
@@ -85,7 +85,13 @@ public sealed class StationSimulatorWorker : BackgroundService
         StationSimulatorOptions opts,
         CancellationToken cancellationToken)
     {
-        var stations = await _repository.GetActiveAsync(cancellationToken);
+        // Create a fresh scope per tick so that scoped services
+        // (repository, DbContext, mediator) are resolved cleanly.
+        using var scope = _scopeFactory.CreateScope();
+        var repository = scope.ServiceProvider.GetRequiredService<IWasteStationRepository>();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+        var stations = await repository.GetActiveAsync(cancellationToken);
 
         if (stations.Count == 0)
         {
@@ -113,7 +119,7 @@ public sealed class StationSimulatorWorker : BackgroundService
                         reading.BatteryPercent,
                         reading.RecordedAt));
 
-                await _mediator.Send(command, cancellationToken);
+                await mediator.Send(command, cancellationToken);
                 success++;
             }
             catch (Exception ex)
