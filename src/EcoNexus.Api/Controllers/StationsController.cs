@@ -1,5 +1,8 @@
 ﻿using EcoNexus.Application.Features.Stations.CreateStation;
 using EcoNexus.Application.Features.Stations.GetStationById;
+using EcoNexus.Application.Features.Stations.ListStations;
+using EcoNexus.Application.Features.Stations.RecordStationReading;
+using EcoNexus.Contracts.Common;
 using EcoNexus.Contracts.Stations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -44,5 +47,33 @@ public sealed class StationsController : ControllerBase
         }
 
         return Ok(station);
+    }
+
+    /// <summary>List stations with pagination and filters.</summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(PagedResult<StationListItemResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> List(
+        [FromQuery] StationListQuery query,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(new ListStationsQuery(query), cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>Record a sensor reading for a station.</summary>
+    [HttpPost("{id:guid}/readings")]
+    [ProducesResponseType(typeof(RecordReadingResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RecordReading(
+        Guid id,
+        [FromBody] RecordReadingRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await _sender.Send(
+            new RecordStationReadingCommand(id, request),
+            cancellationToken);
+
+        return Ok(response);
     }
 }

@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using EcoNexus.Application.Common.Exceptions;
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +42,31 @@ public sealed class GlobalExceptionHandler(
             return true;
         }
 
-        // 2. Duplicate code / business rule violations → 409
+        // 2. Not found → 404
+        if (exception is NotFoundException notFoundException)
+        {
+            logger.LogWarning(
+                "Resource not found: {Message}. TraceId: {TraceId}",
+                notFoundException.Message,
+                httpContext.TraceIdentifier);
+
+            var notFoundProblem = new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Resource not found",
+                Detail = notFoundException.Message,
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4"
+            };
+            notFoundProblem.Extensions["traceId"] = httpContext.TraceIdentifier;
+
+            httpContext.Response.StatusCode = notFoundProblem.Status.Value;
+            httpContext.Response.ContentType = "application/problem+json";
+            await httpContext.Response.WriteAsJsonAsync(notFoundProblem, cancellationToken);
+
+            return true;
+        }
+
+        // 3. Duplicate code / business rule violations → 409
         if (exception is InvalidOperationException invalidOp
             && invalidOp.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
         {
@@ -66,7 +91,7 @@ public sealed class GlobalExceptionHandler(
             return true;
         }
 
-        // 3. Everything else → 500
+        // 4. Everything else → 500
         logger.LogError(
             exception,
             "Unhandled exception occurred. TraceId: {TraceId}",
