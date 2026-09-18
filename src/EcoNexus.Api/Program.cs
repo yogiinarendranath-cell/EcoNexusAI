@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using EcoNexus.Api.Middleware;
+using EcoNexus.Application;
 using EcoNexus.Application.Abstractions.Identity;
-using EcoNexus.Application.Auth.Validators;
 using EcoNexus.Infrastructure.Identity;
 using EcoNexus.Infrastructure.Identity.Seeding;
 using EcoNexus.Infrastructure.Persistence;
@@ -126,7 +126,7 @@ builder.Services.AddScoped<ITokenService, JwtTokenService>();
 // ============================================================
 // FluentValidation — auto-register all validators
 // ============================================================
-builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+builder.Services.AddApplication();
 
 // ============================================================
 // Hosted services

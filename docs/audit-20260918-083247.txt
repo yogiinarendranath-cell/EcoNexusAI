@@ -1,0 +1,493 @@
+﻿
+
+
+########## GIT LOG ##########
+34e586f test(integration): add in-process API factory and end-to-end auth endpoint tests
+000bb19 feat(auth): add AuthController with register, login, refresh, logout, and me endpoints
+8bda814 feat(auth): add auth DTOs and FluentValidation request validators
+40ec0de feat(identity): add JwtTokenService, RefreshToken persistence, and JWT bearer authentication
+c1eb9ff feat(identity): add JwtSettings, ITokenService abstraction, TokenPair, and Jwt config
+406fdac fix(identity): register AddDataProtection required by Identity token providers
+0674004 feat(identity): add ApplicationUser/Role, Identity integration, role seeder, and AddIdentity migration
+2775ff5 chore(build): exclude EF Core migrations from strict analyzers
+81ad0e8 feat(infrastructure): add all EF Core entity configurations and initial migration
+d7c4b02 feat(infrastructure): add WasteStation and StationReading EF Core configurations
+284087c feat(infrastructure): add EcoNexusDbContext with design-time factory and API wiring
+accd77f test(domain): add Alert and CitizenReport lifecycle tests (33 tests)
+0028075 test(domain): add WasteStation and CollectionJob entity tests (28 tests)
+b8ed397 test(domain): add value object tests (54 tests covering FillLevel, Location, Weight, StationCode)
+92f4e2b feat(domain): add Alert and CitizenReport aggregates with raised/filed events
+020b614 feat(domain): add CollectionVehicle, CollectionJob (state machine), RouteStop, and three job events
+51a3718 feat(domain): add WasteStation aggregate with StationReading children and three domain events
+1e45b6c feat(domain): add Location, FillLevel, Weight, and StationCode value objects
+a0a4a92 feat(domain): add WasteCategory, StationStatus, AlertSeverity, JobStatus, ReportStatus enums
+a8a4ae7 feat(domain): add Entity, AggregateRoot, ValueObject, and IDomainEvent base abstractions
+10b34a8 chore(docker): add docker-compose and Dockerfiles (not yet executed)
+7196f0d build: add scripts/build.ps1 one-command build and test
+554f076 feat: add Swagger UI, versioned ping endpoint, and fix .http file
+682db3e feat: integrate Serilog structured logging in Api and Worker
+53909f4 test: add architecture tests enforcing Clean Architecture dependency rules
+a5e75a2 chore: replace placeholder classes with assembly reference markers; add first unit test
+a5631fd build: centralize build config and package versions; adopt editorconfig
+97fc6bc build: centralize project configuration with Directory.Build.props, Directory.Packages.props, and .editorconfig
+cc49bb7 docs: add architecture overview and backlog
+19e6af1 docs: add v0.1 PRD, ADRs 0001-0005, architecture overview, and backlog
+
+
+########## GIT STATUS ##########
+ M Directory.Packages.props
+ M src/EcoNexus.Api/Program.cs
+ M src/EcoNexus.Application/EcoNexus.Application.csproj
+?? docs/audit-20260918-083247.txt
+?? src/EcoNexus.Application/Behaviors/
+?? src/EcoNexus.Application/DependencyInjection.cs
+
+
+########## GIT TAGS ##########
+v0.2.0-auth
+
+
+########## ROOT FILES ##########
+
+Name                     Length
+----                     ------
+.dockerignore               537
+.editorconfig              3068
+.gitignore                 8496
+Directory.Build.props      1877
+Directory.Packages.props   2957
+docker-compose.yml         3071
+EcoNexus.slnx               786
+
+
+
+
+
+########## ROOT DIRECTORIES ##########
+
+Name          
+----          
+.github       
+docker        
+docs          
+infrastructure
+scripts       
+src           
+tests         
+
+
+
+
+
+########## ALL .cs FILES (no bin/obj) ##########
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Api\Program.cs  (7644 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Api\ProgramMarker.cs  (205 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Api\Controllers\AuthController.cs  (11311 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Api\Controllers\HealthController.cs  (409 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Api\Middleware\GlobalExceptionHandler.cs  (1094 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\AssemblyReference.cs  (163 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\DependencyInjection.cs  (1349 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\Abstractions\Identity\ITokenService.cs  (1042 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\Abstractions\Identity\TokenPair.cs  (436 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\Auth\Validators\LoginRequestValidator.cs  (722 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\Auth\Validators\RefreshTokenRequestValidator.cs  (619 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\Auth\Validators\RegisterRequestValidator.cs  (1600 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\Behaviors\LoggingBehavior.cs  (1706 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\Behaviors\ValidationBehavior.cs  (1485 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Contracts\AssemblyReference.cs  (159 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Contracts\Auth\AuthResponse.cs  (598 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Contracts\Auth\CurrentUserResponse.cs  (230 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Contracts\Auth\LoginRequest.cs  (190 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Contracts\Auth\RefreshTokenRequest.cs  (209 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Contracts\Auth\RegisterRequest.cs  (220 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Contracts\Auth\RegisterResponse.cs  (238 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\AssemblyReference.cs  (235 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Abstractions\AggregateRoot.cs  (1277 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Abstractions\Entity.cs  (1326 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Abstractions\IDomainEvent.cs  (391 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Abstractions\ValueObject.cs  (1205 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\DomainEvents\AlertRaisedEvent.cs  (363 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\DomainEvents\CitizenReportFiledEvent.cs  (322 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\DomainEvents\CollectionJobCompletedEvent.cs  (379 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\DomainEvents\CollectionJobStartedEvent.cs  (316 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\DomainEvents\RouteStopCompletedEvent.cs  (354 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\DomainEvents\WasteStationCollectedEvent.cs  (308 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\DomainEvents\WasteStationFillLevelChangedEvent.cs  (376 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\DomainEvents\WasteStationReachedCriticalFillEvent.cs  (399 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Entities\Alert.cs  (3141 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Entities\CitizenReport.cs  (4285 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Entities\CollectionJob.cs  (4504 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Entities\CollectionVehicle.cs  (1381 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Entities\RefreshToken.cs  (3051 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Entities\RouteStop.cs  (1649 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Entities\StationReading.cs  (1796 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Entities\WasteStation.cs  (4601 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Enums\AlertSeverity.cs  (187 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Enums\JobStatus.cs  (214 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Enums\ReportStatus.cs  (212 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Enums\StationStatus.cs  (221 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\Enums\WasteCategory.cs  (295 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\ValueObjects\FillLevel.cs  (1466 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\ValueObjects\Location.cs  (1559 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\ValueObjects\StationCode.cs  (1293 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\ValueObjects\Weight.cs  (1335 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\AssemblyReference.cs  (169 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Identity\ApplicationRole.cs  (558 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Identity\ApplicationUser.cs  (1029 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Identity\EcoNexusRoles.cs  (1057 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Identity\JwtSettings.cs  (1058 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Identity\JwtTokenService.cs  (6186 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Identity\Seeding\RoleSeeder.cs  (1764 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917125548_Initial.cs  (11385 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917125548_Initial.Designer.cs  (15720 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917134902_AddIdentity.cs  (10810 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917134902_AddIdentity.Designer.cs  (26015 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917151413_AddRefreshTokens.cs  (1977 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917151413_AddRefreshTokens.Designer.cs  (27840 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\EcoNexusDbContextModelSnapshot.cs  (27735 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Persistence\EcoNexusDbContext.cs  (1576 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Persistence\EcoNexusDbContextFactory.cs  (888 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Persistence\Configurations\AlertConfiguration.cs  (1908 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Persistence\Configurations\CitizenReportConfiguration.cs  (1927 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Persistence\Configurations\CollectionJobConfiguration.cs  (1653 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Persistence\Configurations\CollectionVehicleConfiguration.cs  (1211 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Persistence\Configurations\RefreshTokenConfiguration.cs  (1408 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Persistence\Configurations\RouteStopConfiguration.cs  (1457 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Persistence\Configurations\StationReadingConfiguration.cs  (1546 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Persistence\Configurations\WasteStationConfiguration.cs  (2802 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Worker\Program.cs  (913 bytes)
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Worker\Worker.cs  (502 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.ArchitectureTests\DependencyRulesTests.cs  (3755 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.IntegrationTests\Auth\AuthEndpointTests.cs  (8800 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.IntegrationTests\Infrastructure\EcoNexusApiFactory.cs  (3238 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\AssemblyReferenceTests.cs  (315 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\Domain\Entities\AlertTests.cs  (4368 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\Domain\Entities\CitizenReportTests.cs  (5841 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\Domain\Entities\CollectionJobTests.cs  (7015 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\Domain\Entities\WasteStationTests.cs  (4516 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\Domain\ValueObjects\FillLevelTests.cs  (1940 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\Domain\ValueObjects\LocationTests.cs  (1564 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\Domain\ValueObjects\StationCodeTests.cs  (1139 bytes)
+D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\Domain\ValueObjects\WeightTests.cs  (1253 bytes)
+
+
+########## ALL .csproj FILES ##########
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Api\EcoNexus.Api.csproj ---
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Sinks.File" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EcoNexus.Application\EcoNexus.Application.csproj" />
+    <ProjectReference Include="..\EcoNexus.Infrastructure\EcoNexus.Infrastructure.csproj" />
+    <ProjectReference Include="..\EcoNexus.Contracts\EcoNexus.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\EcoNexus.Application.csproj ---
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\EcoNexus.Domain\EcoNexus.Domain.csproj" />
+    <ProjectReference Include="..\EcoNexus.Contracts\EcoNexus.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+</Project>
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Contracts\EcoNexus.Contracts.csproj ---
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\EcoNexus.Domain.csproj ---
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\EcoNexus.Infrastructure.csproj ---
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\EcoNexus.Application\EcoNexus.Application.csproj" />
+    <ProjectReference Include="..\EcoNexus.Domain\EcoNexus.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Worker\EcoNexus.Worker.csproj ---
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-EcoNexus.Worker-49cd6881-7644-4378-8903-7e5992cf946c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="Serilog.Sinks.File" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EcoNexus.Application\EcoNexus.Application.csproj" />
+    <ProjectReference Include="..\EcoNexus.Infrastructure\EcoNexus.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
+
+--- D:\NarendraData\EcoNexusAI\tests\EcoNexus.ArchitectureTests\EcoNexus.ArchitectureTests.csproj ---
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NetArchTest.Rules" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EcoNexus.Domain\EcoNexus.Domain.csproj" />
+    <ProjectReference Include="..\..\src\EcoNexus.Application\EcoNexus.Application.csproj" />
+    <ProjectReference Include="..\..\src\EcoNexus.Contracts\EcoNexus.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\EcoNexus.Infrastructure\EcoNexus.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
+
+--- D:\NarendraData\EcoNexusAI\tests\EcoNexus.IntegrationTests\EcoNexus.IntegrationTests.csproj ---
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EcoNexus.Api\EcoNexus.Api.csproj" />
+  </ItemGroup>
+
+</Project>
+
+--- D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\EcoNexus.UnitTests.csproj ---
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EcoNexus.Application\EcoNexus.Application.csproj" />
+    <ProjectReference Include="..\..\src\EcoNexus.Domain\EcoNexus.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
+
+
+########## ALL .json CONFIG (no bin/obj) ##########
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Api\appsettings.Development.json ---
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "Default": "Server=(localdb)\\MSSQLLocalDB;Database=EcoNexus;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True"
+  },
+  "Jwt": {
+    "Issuer": "EcoNexus.Api",
+    "Audience": "EcoNexus.Client",
+    "SecretKey": "DEV-ONLY-EcoNexus-JWT-Secret-Key-Do-Not-Use-In-Production-0123456789",
+    "AccessTokenMinutes": 15,
+    "RefreshTokenDays": 7
+  }
+}
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Api\appsettings.json ---
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Api\Properties\launchSettings.json ---
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5067",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "https://localhost:7276;http://localhost:5067",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Worker\appsettings.Development.json ---
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  }
+}
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Worker\appsettings.json ---
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  }
+}
+
+--- D:\NarendraData\EcoNexusAI\src\EcoNexus.Worker\Properties\launchSettings.json ---
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "EcoNexus.Worker": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
+
+
+########## MIGRATIONS ##########
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917125548_Initial.cs
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917125548_Initial.Designer.cs
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917134902_AddIdentity.cs
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917134902_AddIdentity.Designer.cs
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917151413_AddRefreshTokens.cs
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\20260917151413_AddRefreshTokens.Designer.cs
+D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\Migrations\EcoNexusDbContextModelSnapshot.cs
+
+
+########## BUILD ##########
+dotnet --version:
+10.0.204
+
+dotnet build:
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  EcoNexus.Domain -> D:\NarendraData\EcoNexusAI\src\EcoNexus.Domain\bin\Debug\net10.0\EcoNexus.Domain.dll
+  EcoNexus.Contracts -> D:\NarendraData\EcoNexusAI\src\EcoNexus.Contracts\bin\Debug\net10.0\EcoNexus.Contracts.dll
+  EcoNexus.Application -> D:\NarendraData\EcoNexusAI\src\EcoNexus.Application\bin\Debug\net10.0\EcoNexus.Application.dll
+  EcoNexus.UnitTests -> D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\bin\Debug\net10.0\EcoNexus.UnitTests.dll
+  EcoNexus.Infrastructure -> D:\NarendraData\EcoNexusAI\src\EcoNexus.Infrastructure\bin\Debug\net10.0\EcoNexus.Infrastructure.dll
+  EcoNexus.Worker -> D:\NarendraData\EcoNexusAI\src\EcoNexus.Worker\bin\Debug\net10.0\EcoNexus.Worker.dll
+  EcoNexus.ArchitectureTests -> D:\NarendraData\EcoNexusAI\tests\EcoNexus.ArchitectureTests\bin\Debug\net10.0\EcoNexus.ArchitectureTests.dll
+  EcoNexus.Api -> D:\NarendraData\EcoNexusAI\src\EcoNexus.Api\bin\Debug\net10.0\EcoNexus.Api.dll
+  EcoNexus.IntegrationTests -> D:\NarendraData\EcoNexusAI\tests\EcoNexus.IntegrationTests\bin\Debug\net10.0\EcoNexus.IntegrationTests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.61
+
+
+########## TEST ##########
+Test run for D:\NarendraData\EcoNexusAI\tests\EcoNexus.UnitTests\bin\Debug\net10.0\EcoNexus.UnitTests.dll (.NETCoreApp,Version=v10.0)
+Test run for D:\NarendraData\EcoNexusAI\tests\EcoNexus.ArchitectureTests\bin\Debug\net10.0\EcoNexus.ArchitectureTests.dll (.NETCoreApp,Version=v10.0)
+Test run for D:\NarendraData\EcoNexusAI\tests\EcoNexus.IntegrationTests\bin\Debug\net10.0\EcoNexus.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:   116, Skipped:     0, Total:   116, Duration: 180 ms - EcoNexus.UnitTests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:     8, Skipped:     0, Total:     8, Duration: 395 ms - EcoNexus.ArchitectureTests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:    13, Skipped:     0, Total:    13, Duration: 14 s - EcoNexus.IntegrationTests.dll (net10.0)
