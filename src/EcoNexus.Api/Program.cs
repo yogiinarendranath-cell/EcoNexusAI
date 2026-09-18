@@ -1,12 +1,12 @@
 ﻿using System.Text;
+using EcoNexus.Api.Hubs;
 using EcoNexus.Api.Middleware;
 using EcoNexus.Application;
-using EcoNexus.Infrastructure;
 using EcoNexus.Application.Abstractions.Identity;
+using EcoNexus.Infrastructure;
 using EcoNexus.Infrastructure.Identity;
 using EcoNexus.Infrastructure.Identity.Seeding;
 using EcoNexus.Infrastructure.Persistence;
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -125,10 +125,15 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
 
 // ============================================================
-// FluentValidation — auto-register all validators
+// Application + Infrastructure layers
 // ============================================================
 builder.Services.AddApplication();
- builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure();
+
+// ============================================================
+// SignalR
+// ============================================================
+builder.Services.AddSignalR();
 
 // ============================================================
 // Hosted services
@@ -193,6 +198,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// SignalR hub — real-time station updates
+app.MapHub<OperationsHub>("/hubs/operations");
 
 app.MapGet("/api/v1/ping", () => Results.Ok(new
 {

@@ -1,12 +1,14 @@
-﻿using EcoNexus.Application.Abstractions.Persistence;
+﻿using EcoNexus.Application.Abstractions.Dispatching;
+using EcoNexus.Application.Abstractions.Persistence;
+using EcoNexus.Infrastructure.Dispatching;
 using EcoNexus.Infrastructure.Persistence.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EcoNexus.Infrastructure;
 
 /// <summary>
-/// Registers infrastructure-layer services: repositories and any other
-/// persistence, messaging, or external-service adapters.
+/// Registers infrastructure-layer services: repositories, dispatchers, and
+/// any other persistence, messaging, or external-service adapters.
 /// </summary>
 public static class DependencyInjection
 {
@@ -15,6 +17,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddScoped<IWasteStationRepository, WasteStationRepository>();
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         return services;
     }
