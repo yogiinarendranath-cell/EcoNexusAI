@@ -30,6 +30,15 @@ internal sealed class WasteStationRepository : IWasteStationRepository
         => _context.WasteStations
             .AnyAsync(s => s.Code == code, cancellationToken);
 
+    public async Task<IReadOnlyList<WasteStation>> GetActiveAsync(
+        CancellationToken cancellationToken = default)
+    {
+        // Tracked (no AsNoTracking) — callers will mutate and save.
+        return await _context.WasteStations
+            .Where(s => s.Status == StationStatus.Online)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<(IReadOnlyList<WasteStation> Items, int TotalCount)> ListAsync(
         StationListQuery query,
         CancellationToken cancellationToken = default)

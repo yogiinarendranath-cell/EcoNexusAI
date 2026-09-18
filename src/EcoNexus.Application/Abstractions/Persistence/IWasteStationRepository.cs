@@ -27,6 +27,13 @@ public interface IWasteStationRepository
         StationListQuery query,
         CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Returns all active stations as tracked entities. Used by batch operations
+    /// such as the IoT simulator that need to read-modify-write many stations.
+    /// </summary>
+    Task<IReadOnlyList<WasteStation>> GetActiveAsync(
+        CancellationToken cancellationToken = default);
+
     /// <summary>Flushes tracked changes to the database.</summary>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,7 @@
-﻿using EcoNexus.Worker;
+﻿using EcoNexus.Application;
+using EcoNexus.Infrastructure;
+using EcoNexus.Infrastructure.Persistence;
+using EcoNexus.Worker.Features.IoT;
 using Serilog;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -19,7 +22,24 @@ builder.Services.AddSerilog((services, configuration) =>
             retainedFileCountLimit: 30);
 });
 
-builder.Services.AddHostedService<Worker>();
+// ============================================================
+// Persistence — SQL Server via shared extension
+// ============================================================
+var connectionString = builder.Configuration.GetConnectionString("Default")
+    ?? throw new InvalidOperationException("Connection string 'Default' is not configured.");
+
+builder.Services.AddEcoNexusPersistence(connectionString);
+
+// ============================================================
+// Application + Infrastructure
+// ============================================================
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
+
+// ============================================================
+// IoT Simulator
+// ============================================================
+builder.Services.AddIotSimulator(builder.Configuration);
 
 var host = builder.Build();
 
