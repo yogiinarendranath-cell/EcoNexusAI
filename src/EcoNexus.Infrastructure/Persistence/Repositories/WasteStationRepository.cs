@@ -34,7 +34,6 @@ internal sealed class WasteStationRepository : IWasteStationRepository
     public async Task<IReadOnlyList<WasteStation>> GetActiveAsync(
         CancellationToken cancellationToken = default)
     {
-        // Tracked (no AsNoTracking) — callers will mutate and save.
         return await _context.WasteStations
             .Where(s => s.Status == StationStatus.Online)
             .ToListAsync(cancellationToken);
@@ -99,9 +98,23 @@ internal sealed class WasteStationRepository : IWasteStationRepository
         }
         catch (DbUpdateConcurrencyException ex)
         {
-            // Translate EF Core's concurrency exception into an Application-layer
-            // exception so that Application code can catch it without depending
-            // on Microsoft.EntityFrameworkCore.
+            // Genuine concurrency conflict: EF expected to affect N rows on a
+            // Modified or Deleted entity and affected fewer. Surface that as a
+            // domain-meaningful exception the Application layer can react to.
+            //
+            // False concurrency conflict: EF classified an Added entity as
+            // Modified (e.g. because its client-assigned Id was non-empty),
+            // issued UPDATE ... WHERE Id = <new>, matched 0 rows, and threw.
+            // That is a model configuration bug, not a concurrency condition.
+            // Rethrow as-is so the failure is loud instead of silently wrapped.
+            var hadExpectedModificationOrDeletion = ex.Entries.Any(e =>
+                e.State == EntityState.Modified || e.State == EntityState.Deleted);
+
+            if (!hadExpectedModificationOrDeletion)
+            {
+                throw;
+            }
+
             throw new ConcurrencyConflictException(
                 "A concurrency conflict occurred while saving changes.", ex);
         }

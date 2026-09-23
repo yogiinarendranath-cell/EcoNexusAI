@@ -13,7 +13,7 @@ public sealed class GlobalExceptionHandler(
         Exception exception,
         CancellationToken cancellationToken)
     {
-        // 1. FluentValidation failures → 400
+        // 1. FluentValidation failures -> 400
         if (exception is ValidationException validationException)
         {
             logger.LogWarning(
@@ -42,7 +42,7 @@ public sealed class GlobalExceptionHandler(
             return true;
         }
 
-        // 2. Not found → 404
+        // 2. Not found -> 404
         if (exception is NotFoundException notFoundException)
         {
             logger.LogWarning(
@@ -66,7 +66,55 @@ public sealed class GlobalExceptionHandler(
             return true;
         }
 
-        // 3. Duplicate code / business rule violations → 409
+        // 3. Optimistic concurrency conflict -> 409
+        if (exception is ConcurrencyConflictException concurrencyException)
+        {
+            logger.LogWarning(
+                "Concurrency conflict: {Message}. TraceId: {TraceId}",
+                concurrencyException.Message,
+                httpContext.TraceIdentifier);
+
+            var concurrencyProblem = new ProblemDetails
+            {
+                Status = StatusCodes.Status409Conflict,
+                Title = "Concurrency conflict",
+                Detail = concurrencyException.Message,
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.8"
+            };
+            concurrencyProblem.Extensions["traceId"] = httpContext.TraceIdentifier;
+
+            httpContext.Response.StatusCode = concurrencyProblem.Status.Value;
+            httpContext.Response.ContentType = "application/problem+json";
+            await httpContext.Response.WriteAsJsonAsync(concurrencyProblem, cancellationToken);
+
+            return true;
+        }
+
+        // 4. Domain/business conflict -> 409
+        if (exception is ConflictException conflictException)
+        {
+            logger.LogWarning(
+                "Conflict: {Message}. TraceId: {TraceId}",
+                conflictException.Message,
+                httpContext.TraceIdentifier);
+
+            var conflictProblem = new ProblemDetails
+            {
+                Status = StatusCodes.Status409Conflict,
+                Title = "Conflict",
+                Detail = conflictException.Message,
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.8"
+            };
+            conflictProblem.Extensions["traceId"] = httpContext.TraceIdentifier;
+
+            httpContext.Response.StatusCode = conflictProblem.Status.Value;
+            httpContext.Response.ContentType = "application/problem+json";
+            await httpContext.Response.WriteAsJsonAsync(conflictProblem, cancellationToken);
+
+            return true;
+        }
+
+        // 5. Legacy: InvalidOperationException with "already exists" -> 409
         if (exception is InvalidOperationException invalidOp
             && invalidOp.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
         {
@@ -91,7 +139,7 @@ public sealed class GlobalExceptionHandler(
             return true;
         }
 
-        // 4. Everything else → 500
+        // 6. Everything else -> 500
         logger.LogError(
             exception,
             "Unhandled exception occurred. TraceId: {TraceId}",

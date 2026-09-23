@@ -47,13 +47,33 @@ public sealed class EcoNexusDbContext
 
         // 2. Apply our own IEntityTypeConfiguration<T> classes.
         builder.ApplyConfigurationsFromAssembly(typeof(EcoNexusDbContext).Assembly);
+
+        // 3. Fix client-assigned Guid Ids.
+        //
+        //    Our domain Entity base class assigns Id = Guid.NewGuid() in its
+        //    parameterless constructor. EF Core's default convention is that a
+        //    Guid primary key which is NOT the CLR default (Guid.Empty) at the
+        //    time an entity is attached is assumed to already exist in the
+        //    database, and therefore is tracked as Modified (UPDATE) rather
+        //    than Added (INSERT).
+        //
+        //    ValueGeneratedNever() tells EF: "the application assigns this Id,
+        //    and a new instance with this Id is a new row - INSERT it."
+        foreach (var entityType in builder.Model.GetEntityTypes())
+        {
+            if (typeof(Entity).IsAssignableFrom(entityType.ClrType)
+                && entityType.FindProperty(nameof(Entity.Id)) is not null)
+            {
+                builder.Entity(entityType.ClrType)
+                    .Property(nameof(Entity.Id))
+                    .ValueGeneratedNever();
+            }
+        }
     }
 
     public override async Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {
-        // Gather events BEFORE saving (in case we want to use them post-save
-        // for optimistic-concurrency decisions later). Take a snapshot now.
         var aggregatesWithEvents = ChangeTracker
             .Entries<AggregateRoot>()
             .Where(e => e.Entity.DomainEvents.Count > 0)
@@ -64,7 +84,6 @@ public sealed class EcoNexusDbContext
             .SelectMany(a => a.DomainEvents)
             .ToList();
 
-        // Clear events immediately so a failing save doesn't re-dispatch later.
         foreach (var aggregate in aggregatesWithEvents)
         {
             aggregate.ClearDomainEvents();
