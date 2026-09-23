@@ -1,7 +1,9 @@
 ﻿using EcoNexus.Application.Abstractions.Dispatching;
 using EcoNexus.Application.Abstractions.Persistence;
+using EcoNexus.Application.Abstractions.Realtime;
 using EcoNexus.Infrastructure.Dispatching;
 using EcoNexus.Infrastructure.Persistence.Repositories;
+using EcoNexus.Infrastructure.Realtime;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EcoNexus.Infrastructure;
@@ -18,6 +20,7 @@ public static class DependencyInjection
 
         services.AddScoped<IWasteStationRepository, WasteStationRepository>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        services.AddSingleton<IOperationsNotifier, SignalROperationsNotifier>();
 
         return services;
     }

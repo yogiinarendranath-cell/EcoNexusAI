@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using EcoNexus.Api.Hubs;
+using EcoNexus.Infrastructure.Realtime;
 using EcoNexus.Api.Middleware;
 using EcoNexus.Application;
 using EcoNexus.Application.Abstractions.Identity;
