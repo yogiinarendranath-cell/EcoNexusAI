@@ -9,14 +9,6 @@ namespace EcoNexus.Application.Abstractions.Persistence;
 /// infrastructure layer using EF Core. Handlers depend on this interface,
 /// not on DbContext.
 /// </summary>
-/// <remarks>
-/// Implementations MUST translate EF Core persistence exceptions into the
-/// Application-layer exceptions defined in
-/// <c>EcoNexus.Application.Common.Exceptions</c>. In particular,
-/// <c>Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException</c> MUST
-/// be surfaced as <c>EcoNexus.Application.Common.Exceptions.ConcurrencyConflictException</c>.
-/// This keeps EF Core out of the Application layer's dependency graph.
-/// </remarks>
 public interface IWasteStationRepository
 {
     /// <summary>Adds a new station and commits the change.</summary>
@@ -42,11 +34,7 @@ public interface IWasteStationRepository
     Task<IReadOnlyList<WasteStation>> GetActiveAsync(
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Flushes tracked changes to the database.
-    /// MUST translate EF Core's DbUpdateConcurrencyException into
-    /// EcoNexus.Application.Common.Exceptions.ConcurrencyConflictException.
-    /// </summary>
+    /// <summary>Flushes tracked changes to the database.</summary>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>

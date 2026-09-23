@@ -3,6 +3,7 @@ using EcoNexus.Application.Common.Exceptions;
 using EcoNexus.Contracts.Stations;
 using EcoNexus.Domain.ValueObjects;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcoNexus.Application.Features.Stations.RecordStationReading;
 
@@ -40,11 +41,10 @@ internal sealed class RecordStationReadingHandler
         {
             await _repository.SaveChangesAsync(cancellationToken);
         }
-        catch (ConcurrencyConflictException)
+        catch (DbUpdateConcurrencyException)
         {
             // The station row disappeared or was concurrently modified between
-            // load and save (e.g., station deleted mid-request). Re-read to
-            // determine which case we are in.
+            // load and save (e.g., station deleted mid-request).
             var stillExists = await _repository.GetByIdAsync(request.StationId, cancellationToken);
             if (stillExists is null)
             {

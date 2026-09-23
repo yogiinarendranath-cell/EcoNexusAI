@@ -1,5 +1,4 @@
 ﻿using EcoNexus.Application.Abstractions.Persistence;
-using EcoNexus.Application.Common.Exceptions;
 using EcoNexus.Contracts.Stations;
 using EcoNexus.Domain.Entities;
 using EcoNexus.Domain.Enums;
@@ -91,21 +90,8 @@ internal sealed class WasteStationRepository : IWasteStationRepository
         return (items, total);
     }
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await _context.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            // Translate EF Core's concurrency exception into an Application-layer
-            // exception so that Application code can catch it without depending
-            // on Microsoft.EntityFrameworkCore.
-            throw new ConcurrencyConflictException(
-                "A concurrency conflict occurred while saving changes.", ex);
-        }
-    }
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        => _context.SaveChangesAsync(cancellationToken);
 
     public void Remove(WasteStation station)
     {

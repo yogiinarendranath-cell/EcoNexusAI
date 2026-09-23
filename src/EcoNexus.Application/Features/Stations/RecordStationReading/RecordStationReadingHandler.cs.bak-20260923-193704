@@ -28,6 +28,7 @@ internal sealed class RecordStationReadingHandler
         }
 
         var wasCritical = station.CurrentFill.IsCritical;
+
         var fillLevel = FillLevel.FromPercent(request.Request.FillLevelPercent);
 
         var reading = station.RecordReading(
@@ -36,24 +37,7 @@ internal sealed class RecordStationReadingHandler
             request.Request.BatteryPercent,
             request.Request.RecordedAt);
 
-        try
-        {
-            await _repository.SaveChangesAsync(cancellationToken);
-        }
-        catch (ConcurrencyConflictException)
-        {
-            // The station row disappeared or was concurrently modified between
-            // load and save (e.g., station deleted mid-request). Re-read to
-            // determine which case we are in.
-            var stillExists = await _repository.GetByIdAsync(request.StationId, cancellationToken);
-            if (stillExists is null)
-            {
-                throw new NotFoundException($"Station '{request.StationId}' was not found.");
-            }
-
-            throw new ConflictException(
-                $"Station '{request.StationId}' was modified concurrently. Please retry.");
-        }
+        await _repository.SaveChangesAsync(cancellationToken);
 
         var isCritical = station.CurrentFill.IsCritical;
         var criticalTransition = !wasCritical && isCritical;

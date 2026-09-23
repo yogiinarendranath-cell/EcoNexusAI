@@ -14,38 +14,46 @@ namespace EcoNexus.IntegrationTests.Realtime;
 /// End-to-end proof that a recorded reading produces a SignalR push
 /// to connected clients. This is the integration test for Step 8.
 /// </summary>
-public sealed class StationRealtimeBroadcastTests : IClassFixture<EcoNexusApiFactory>
+public sealed class StationRealtimeBroadcastTests : IAsyncLifetime
 {
-    private readonly EcoNexusApiFactory _factory;
+    private readonly EcoNexusApiFactory _factory = new();
+    private HttpClient _client = null!;
 
-    public StationRealtimeBroadcastTests(EcoNexusApiFactory factory)
+    public async Task InitializeAsync()
     {
-        _factory = factory;
+        await _factory.InitializeAsync();
+        _client = _factory.CreateClient();
+    }
+
+    public async Task DisposeAsync()
+    {
+        _client.Dispose();
+        await _factory.DropDatabaseAsync();
+        _factory.Dispose();
     }
 
     [Fact]
     public async Task RecordReading_PushesFillLevelChangedToSignalRClients()
     {
-        using var client = _factory.CreateClient();
-
         // -------- Arrange --------
+        // 1. Create a station via HTTP
         var createReq = new CreateStationRequest(
-            Code: $"RT-{Random.Shared.Next(100, 999)}",
+            Code: "RT-001",
             Latitude: 12.9716,
             Longitude: 77.5946,
             CapacityKilograms: 500,
             PrimaryCategory: "Plastic");
 
-        var createResp = await client.PostAsJsonAsync("/api/v1/stations", createReq);
+        var createResp = await _client.PostAsJsonAsync("/api/v1/stations", createReq);
         createResp.EnsureSuccessStatusCode();
         var created = await createResp.Content.ReadFromJsonAsync<CreateStationResponse>();
         Assert.NotNull(created);
 
-        // -------- SignalR client --------
+        // 2. Open a real SignalR client against the in-process TestServer
         var received = Channel.CreateUnbounded<StationFillLevelChangedNotification>();
 
         await using var connection = new HubConnectionBuilder()
-            .WithUrl(new Uri(client.BaseAddress!, "/hubs/operations"), options =>
+            .WithUrl(new Uri(_client.BaseAddress!, "/hubs/operations"), options =>
             {
                 options.Transports = HttpTransportType.LongPolling;
                 options.HttpMessageHandlerFactory = _ => _factory.Server.CreateHandler();
@@ -58,33 +66,26 @@ public sealed class StationRealtimeBroadcastTests : IClassFixture<EcoNexusApiFac
 
         await connection.StartAsync();
 
-        try
-        {
-            // -------- Act --------
-            var readingReq = new RecordReadingRequest(
-                FillLevelPercent: 42.5,
-                TemperatureCelsius: 21.0,
-                BatteryPercent: 88,
-                RecordedAt: DateTimeOffset.UtcNow);
+        // -------- Act --------
+        var readingReq = new RecordReadingRequest(
+            FillLevelPercent: 42.5,
+            TemperatureCelsius: 21.0,
+            BatteryPercent: 88,
+            RecordedAt: DateTimeOffset.UtcNow);
 
-            var readResp = await client.PostAsJsonAsync(
-                $"/api/v1/stations/{created!.Id}/readings",
-                readingReq);
-            readResp.EnsureSuccessStatusCode();
+        var readResp = await _client.PostAsJsonAsync(
+            $"/api/v1/stations/{created!.Id}/readings",
+            readingReq);
+        readResp.EnsureSuccessStatusCode();
 
-            // -------- Assert --------
-            var notification = await ReadWithTimeoutAsync(received.Reader, TimeSpan.FromSeconds(10));
+        // -------- Assert --------
+        var notification = await ReadWithTimeoutAsync(received.Reader, TimeSpan.FromSeconds(10));
 
-            Assert.NotNull(notification);
-            Assert.Equal(created.Id, notification!.StationId);
-            Assert.Equal(createReq.Code, notification.StationCode);
-            Assert.Equal(42.5, notification.FillLevelPercent, 1);
-            Assert.False(notification.IsCritical);
-        }
-        finally
-        {
-            await connection.StopAsync();
-        }
+        Assert.NotNull(notification);
+        Assert.Equal(created.Id, notification!.StationId);
+        Assert.Equal("RT-001", notification.StationCode);
+        Assert.Equal(42.5, notification.FillLevelPercent, 1);
+        Assert.False(notification.IsCritical);
     }
 
     private static async Task<StationFillLevelChangedNotification?> ReadWithTimeoutAsync(

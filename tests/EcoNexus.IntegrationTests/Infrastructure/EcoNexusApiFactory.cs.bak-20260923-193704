@@ -8,25 +8,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Xunit;
 
 namespace EcoNexus.IntegrationTests.Infrastructure;
 
 /// <summary>
 /// Boots the real EcoNexus API in-process for integration tests.
-/// Each factory gets a fresh LocalDB database, migrated and role-seeded
-/// at InitializeAsync time. The database is dropped only when the factory
-/// itself is disposed, AFTER the host has shut down.
+/// Each test class instance gets a fresh LocalDB database that is migrated
+/// and role-seeded at InitializeAsync time.
 /// </summary>
-public sealed class EcoNexusApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public sealed class EcoNexusApiFactory : WebApplicationFactory<Program>
 {
-    // Serialize DB-create + migration across parallel test classes sharing the
-    // same SQL Server instance. Without this, sp_getapplock contention and
-    // concurrent CREATE DATABASE calls cause flaky failures.
-    private static readonly SemaphoreSlim MigrationGate = new(initialCount: 1, maxCount: 1);
-
     private readonly string _databaseName = $"EcoNexus_Test_{Guid.NewGuid():N}";
-    private bool _initialized;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -46,48 +38,38 @@ public sealed class EcoNexusApiFactory : WebApplicationFactory<Program>, IAsyncL
 
         builder.ConfigureServices(services =>
         {
+            // Remove the production RoleSeeder — it would try to seed roles
+            // *during host startup*, before our migrations have run. We seed
+            // roles explicitly in InitializeAsync, after the schema exists.
             services.RemoveAll<IHostedService>();
             services.RemoveAll<RoleSeeder>();
         });
     }
 
+    /// <summary>
+    /// Creates the test database, applies migrations, and seeds roles.
+    /// </summary>
     public async Task InitializeAsync()
     {
-        if (_initialized) return;
+        using var scope = Services.CreateScope();
 
-        // Ensure the host is created before we touch Services.
-        _ = Server;
+        // 1. Apply migrations
+        var db = scope.ServiceProvider.GetRequiredService<EcoNexusDbContext>();
+        await db.Database.MigrateAsync();
 
-        await MigrationGate.WaitAsync();
-        try
+        // 2. Seed the 7 canonical roles
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+        foreach (var roleName in EcoNexusRoles.All)
         {
-            using var scope = Services.CreateScope();
-
-            // 1. Apply migrations
-            var db = scope.ServiceProvider.GetRequiredService<EcoNexusDbContext>();
-            await db.Database.MigrateAsync();
-
-            // 2. Seed the 7 canonical roles
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-            foreach (var roleName in EcoNexusRoles.All)
+            if (!await roleManager.RoleExistsAsync(roleName))
             {
-                if (!await roleManager.RoleExistsAsync(roleName))
-                {
-                    await roleManager.CreateAsync(new ApplicationRole(roleName));
-                }
+                await roleManager.CreateAsync(new ApplicationRole(roleName));
             }
         }
-        finally
-        {
-            MigrationGate.Release();
-        }
-
-        _initialized = true;
     }
 
     /// <summary>
-    /// Drops the test database. Called only after the host is disposed,
-    /// so it is safe to invoke from DisposeAsync.
+    /// Drops the test database.
     /// </summary>
     public async Task DropDatabaseAsync()
     {
@@ -101,14 +83,5 @@ public sealed class EcoNexusApiFactory : WebApplicationFactory<Program>, IAsyncL
         {
             // Host already disposed; nothing to clean up.
         }
-    }
-
-    public new async Task DisposeAsync()
-    {
-        // 1. Dispose host first (stops background workers, releases DbContext pool)
-        await base.DisposeAsync();
-
-        // 2. Then drop the DB
-        await DropDatabaseAsync();
     }
 }
