@@ -36,4 +36,9 @@ public interface IWasteStationRepository
 
     /// <summary>Flushes tracked changes to the database.</summary>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Marks the station for deletion. Caller must call SaveChangesAsync to persist.
+    /// </summary>
+    void Remove(WasteStation station);
 }

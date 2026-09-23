@@ -147,4 +147,29 @@ public sealed class WasteStation : AggregateRoot
         Status = StationStatus.Decommissioned;
         LastUpdatedAt = at;
     }
+
+    /// <summary>
+    /// Updates the mutable metadata of the station (location, capacity, category).
+    /// Code, CurrentFill, and Status are intentionally NOT changeable here.
+    /// </summary>
+    public void UpdateMetadata(
+        Location location,
+        Weight capacity,
+        WasteCategory category)
+    {
+        ArgumentNullException.ThrowIfNull(location);
+        ArgumentNullException.ThrowIfNull(capacity);
+
+        if (capacity.Kilograms <= 0)
+        {
+            throw new ArgumentException(
+                "Station capacity must be greater than zero.",
+                nameof(capacity));
+        }
+
+        Location = location;
+        Capacity = capacity;
+        PrimaryCategory = category;
+        LastUpdatedAt = DateTimeOffset.UtcNow;
+    }
 }

@@ -92,4 +92,10 @@ internal sealed class WasteStationRepository : IWasteStationRepository
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         => _context.SaveChangesAsync(cancellationToken);
+
+    public void Remove(WasteStation station)
+    {
+        ArgumentNullException.ThrowIfNull(station);
+        _context.WasteStations.Remove(station);
+    }
 }

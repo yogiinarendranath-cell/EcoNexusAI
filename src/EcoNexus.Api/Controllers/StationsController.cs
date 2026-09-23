@@ -1,5 +1,6 @@
 ﻿using EcoNexus.Application.Features.Stations.CreateStation;
-using EcoNexus.Application.Features.Stations.GetStationById;
+using EcoNexus.Application.Features.Stations.DeleteStation;
+using EcoNexus.Application.Features.Stations.UpdateStation;using EcoNexus.Application.Features.Stations.GetStationById;
 using EcoNexus.Application.Features.Stations.ListStations;
 using EcoNexus.Application.Features.Stations.RecordStationReading;
 using EcoNexus.Contracts.Common;
@@ -75,5 +76,30 @@ public sealed class StationsController : ControllerBase
             cancellationToken);
 
         return Ok(response);
+    }
+
+    /// <summary>Update the mutable metadata of an existing station.</summary>
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(
+        Guid id,
+        [FromBody] UpdateStationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _sender.Send(new UpdateStationCommand(id, request), cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>Delete a station. Idempotent.</summary>
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> Delete(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        await _sender.Send(new DeleteStationCommand(id), cancellationToken);
+        return NoContent();
     }
 }
