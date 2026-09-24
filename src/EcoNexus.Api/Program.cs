@@ -174,6 +174,22 @@ builder.Services.AddOpenApi();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+// ============================================================
+// CORS — allow the Vite dev frontend during development
+// ============================================================
+const string DevCorsPolicy = "EcoNexusDev";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(DevCorsPolicy, policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 var app = builder.Build();
 
 // ============================================================
@@ -193,6 +209,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// CORS must sit before auth so preflight OPTIONS requests are answered
+// without hitting the authentication middleware.
+app.UseCors(DevCorsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
