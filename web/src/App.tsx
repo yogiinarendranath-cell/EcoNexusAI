@@ -1,6 +1,7 @@
 ﻿import { Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './features/landing/LandingPage';
 import StationsPage from './features/stations/StationsPage';
+import VehiclesPage from './features/vehicles/VehiclesPage';
 import LoginPage from './features/auth/LoginPage';
 
 export default function App() {
@@ -9,6 +10,7 @@ export default function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/stations" element={<StationsPage />} />
+      <Route path="/vehicles" element={<VehiclesPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

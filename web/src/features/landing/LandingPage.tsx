@@ -19,9 +19,15 @@ export default function LandingPage() {
           <nav className="flex items-center gap-4">
             <Link
               to="/stations"
-              className="px-4 py-2 rounded-lg bg-emerald-500 text-slate-950 font-medium hover:bg-emerald-400 transition text-sm"
+              className="text-sm text-slate-300 hover:text-white transition"
             >
-              View stations
+              Stations
+            </Link>
+            <Link
+              to="/vehicles"
+              className="text-sm text-slate-300 hover:text-white transition"
+            >
+              Vehicles
             </Link>
             <UserMenu />
           </nav>
