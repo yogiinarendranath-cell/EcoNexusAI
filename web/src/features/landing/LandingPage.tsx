@@ -29,6 +29,12 @@ export default function LandingPage() {
             >
               Vehicles
             </Link>
+            <Link
+              to="/jobs"
+              className="text-sm text-slate-300 hover:text-white transition"
+            >
+              Jobs
+            </Link>
             <UserMenu />
           </nav>
         </div>
