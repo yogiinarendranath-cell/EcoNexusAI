@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchJobs } from './jobsApi';
 import ScheduleJobForm from './ScheduleJobForm';
+import PreviewRouteForm from './PreviewRouteForm';
 import UserMenu from '../auth/UserMenu';
 import type { CollectionJob, JobStatus } from '../../types/job';
 
 export default function JobsPage() {
   const [showForm, setShowForm] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ['jobs'],
@@ -55,6 +57,13 @@ export default function JobsPage() {
             </button>
             <button
               type="button"
+              onClick={() => setShowPreview((v) => !v)}
+              className="px-4 py-2 rounded-lg bg-sky-500 text-slate-950 font-medium text-sm hover:bg-sky-400 transition"
+            >
+              {showPreview ? 'Hide preview' : 'Preview route'}
+            </button>
+            <button
+              type="button"
               onClick={() => setShowForm((v) => !v)}
               className="px-4 py-2 rounded-lg bg-emerald-500 text-slate-950 font-medium text-sm hover:bg-emerald-400 transition"
             >
@@ -62,6 +71,10 @@ export default function JobsPage() {
             </button>
           </div>
         </div>
+
+        {showPreview && (
+          <PreviewRouteForm onClose={() => setShowPreview(false)} />
+        )}
 
         {showForm && (
           <ScheduleJobForm

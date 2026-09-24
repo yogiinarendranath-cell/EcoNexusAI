@@ -29,3 +29,24 @@ export type ScheduleJobRequest = {
   scheduledFor: string;
   stops: ScheduleJobStop[];
 };
+
+export type PreviewRouteRequest = {
+  vehicleId: string;
+  candidateStationIds: string[];
+};
+
+export type PreviewRouteStop = {
+  stationId: string;
+  stationCode: string;
+  sequence: number;
+  fillLevelPercent: number;
+  estimatedWeightKilograms: number;
+};
+
+export type PreviewRouteResponse = {
+  vehicleId: string;
+  vehicleCapacityKilograms: number;
+  stops: PreviewRouteStop[];
+  totalEstimatedWeightKilograms: number;
+  skippedCount: number;
+};
