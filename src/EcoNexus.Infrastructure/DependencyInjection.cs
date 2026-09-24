@@ -19,6 +19,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddScoped<IWasteStationRepository, WasteStationRepository>();
+        services.AddScoped<ICollectionVehicleRepository, CollectionVehicleRepository>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddSingleton<IOperationsNotifier, SignalROperationsNotifier>();
 
