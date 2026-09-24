@@ -69,14 +69,14 @@ internal sealed class WasteStationRepository : IWasteStationRepository
         q = sortBy switch
         {
             "filllevel" => query.SortDesc
-                ? q.OrderByDescending(s => s.CurrentFill.Percent).ThenBy(s => s.Code.Value)
-                : q.OrderBy(s => s.CurrentFill.Percent).ThenBy(s => s.Code.Value),
+                ? q.OrderByDescending(s => s.CurrentFill.Percent).ThenBy(s => s.Code)
+                : q.OrderBy(s => s.CurrentFill.Percent).ThenBy(s => s.Code),
             "lastupdated" => query.SortDesc
-                ? q.OrderByDescending(s => s.LastUpdatedAt).ThenBy(s => s.Code.Value)
-                : q.OrderBy(s => s.LastUpdatedAt).ThenBy(s => s.Code.Value),
+                ? q.OrderByDescending(s => s.LastUpdatedAt).ThenBy(s => s.Code)
+                : q.OrderBy(s => s.LastUpdatedAt).ThenBy(s => s.Code),
             _ => query.SortDesc
-                ? q.OrderByDescending(s => s.Code.Value)
-                : q.OrderBy(s => s.Code.Value)
+                ? q.OrderByDescending(s => s.Code)
+                : q.OrderBy(s => s.Code)
         };
 
         var page = query.Page < 1 ? 1 : query.Page;
