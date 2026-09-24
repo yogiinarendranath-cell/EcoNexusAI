@@ -20,6 +20,7 @@ public static class DependencyInjection
 
         services.AddScoped<IWasteStationRepository, WasteStationRepository>();
         services.AddScoped<ICollectionVehicleRepository, CollectionVehicleRepository>();
+        services.AddScoped<ICollectionJobRepository, CollectionJobRepository>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddSingleton<IOperationsNotifier, SignalROperationsNotifier>();
 
