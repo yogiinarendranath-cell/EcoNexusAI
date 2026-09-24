@@ -1,5 +1,6 @@
 ﻿using EcoNexus.Application.Features.CollectionJobs.GetJobById;
 using EcoNexus.Application.Features.CollectionJobs.ListJobs;
+using EcoNexus.Application.Features.CollectionJobs.PreviewRoute;
 using EcoNexus.Application.Features.CollectionJobs.ScheduleJob;
 using EcoNexus.Contracts.CollectionJobs;
 using MediatR;
@@ -45,5 +46,16 @@ public sealed class CollectionJobsController : ControllerBase
     {
         var job = await _mediator.Send(new ScheduleJobCommand(request), cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = job.Id }, job);
+    }
+
+    [HttpPost("preview-route")]
+    [ProducesResponseType(typeof(PreviewRouteResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PreviewRoute(
+        [FromBody] PreviewRouteRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(new PreviewRouteQuery(request), cancellationToken);
+        return Ok(result);
     }
 }
