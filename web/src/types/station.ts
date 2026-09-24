@@ -32,6 +32,7 @@ export type StationListItem = {
   currentFillPercent: number;
   primaryCategory: WasteCategory;
   status: StationStatus;
+  isCritical: boolean;
   lastUpdatedAt: string;
   lastCollectedAt: string | null;
 };

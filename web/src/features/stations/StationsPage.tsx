@@ -1,12 +1,13 @@
 ﻿import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { fetchStations } from './stationsApi';
-import type { StationListItem } from '../../types/station';
+import type { StationListItem, StationStatus } from '../../types/station';
 
 export default function StationsPage() {
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
-    queryKey: ['stations', { page: 1, pageSize: 50 }],
-    queryFn: () => fetchStations({ page: 1, pageSize: 50, sortBy: 'code' }),
+    queryKey: ['stations', { page: 1, pageSize: 50, sortBy: 'filllevel', sortDesc: true }],
+    queryFn: () =>
+      fetchStations({ page: 1, pageSize: 50, sortBy: 'filllevel', sortDesc: true }),
   });
 
   return (
@@ -33,7 +34,7 @@ export default function StationsPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Smart Stations</h1>
             <p className="text-sm text-slate-400 mt-1">
-              Live view of waste stations from the EcoNexus network.
+              Live view of waste stations from the EcoNexus network. Sorted by fill level, critical first.
             </p>
           </div>
           <button
@@ -103,51 +104,87 @@ function StationsTable({ items }: { items: StationListItem[] }) {
             <th className="text-left px-4 py-3 font-medium">Code</th>
             <th className="text-left px-4 py-3 font-medium">Category</th>
             <th className="text-left px-4 py-3 font-medium">Status</th>
-            <th className="text-right px-4 py-3 font-medium">Fill %</th>
+            <th className="text-left px-4 py-3 font-medium w-56">Fill %</th>
             <th className="text-right px-4 py-3 font-medium">Capacity</th>
             <th className="text-right px-4 py-3 font-medium">Location</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800">
-          {items.map((s) => {
-            const isCritical = s.currentFillPercent >= 90;
-            return (
-              <tr key={s.id} className="hover:bg-slate-900/40 transition">
-                <td className="px-4 py-3 font-mono text-slate-100">{s.code}</td>
-                <td className="px-4 py-3 text-slate-300">{s.primaryCategory}</td>
-                <td className="px-4 py-3">
-                  <StatusBadge status={s.status} />
-                </td>
-                <td className={'px-4 py-3 text-right font-medium ' + (isCritical ? 'text-red-400' : 'text-slate-200')}>
-                  {s.currentFillPercent.toFixed(1)}%
-                </td>
-                <td className="px-4 py-3 text-right text-slate-400">
-                  {s.capacityKilograms} kg
-                </td>
-                <td className="px-4 py-3 text-right text-slate-500 font-mono text-xs">
-                  {s.latitude.toFixed(4)}, {s.longitude.toFixed(4)}
-                </td>
-              </tr>
-            );
-          })}
+          {items.map((s) => (
+            <tr key={s.id} className="hover:bg-slate-900/40 transition">
+              <td className="px-4 py-3 font-mono text-slate-100">{s.code}</td>
+              <td className="px-4 py-3 text-slate-300">{s.primaryCategory}</td>
+              <td className="px-4 py-3">
+                <StatusBadge status={s.status} />
+              </td>
+              <td className="px-4 py-3">
+                <FillBar percent={s.currentFillPercent} isCritical={s.isCritical} />
+              </td>
+              <td className="px-4 py-3 text-right text-slate-400">
+                {s.capacityKilograms} kg
+              </td>
+              <td className="px-4 py-3 text-right text-slate-500 font-mono text-xs">
+                {s.latitude.toFixed(4)}, {s.longitude.toFixed(4)}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const tone =
-    status === 'Online'
-      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-      : status === 'Maintenance'
-        ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-        : status === 'Offline'
-          ? 'bg-slate-500/10 text-slate-400 border-slate-500/20'
-          : 'bg-red-500/10 text-red-400 border-red-500/20';
+function StatusBadge({ status }: { status: StationStatus }) {
+  const styles: Record<StationStatus, string> = {
+    Online:         'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    Maintenance:    'bg-amber-500/10 text-amber-400 border-amber-500/30',
+    Offline:        'bg-slate-500/10 text-slate-400 border-slate-500/30',
+    Decommissioned: 'bg-red-500/10 text-red-400 border-red-500/30',
+  };
+  const label: Record<StationStatus, string> = {
+    Online:         'Online',
+    Maintenance:    'Maintenance',
+    Offline:        'Offline',
+    Decommissioned: 'Decommissioned',
+  };
   return (
-    <span className={'inline-block px-2 py-0.5 rounded-full border text-xs ' + tone}>
-      {status}
+    <span
+      className={
+        'inline-block px-2 py-0.5 rounded-full border text-xs font-medium ' +
+        styles[status]
+      }
+    >
+      {label[status]}
     </span>
+  );
+}
+
+function FillBar({ percent, isCritical }: { percent: number; isCritical: boolean }) {
+  // Clamp for safety in case the API returns a value slightly out of range.
+  const clamped = Math.max(0, Math.min(100, percent));
+
+  // Color tiers: low = emerald, medium = amber, high = red (critical).
+  let barColor = 'bg-emerald-500';
+  if (clamped >= 90) barColor = 'bg-red-500';
+  else if (clamped >= 70) barColor = 'bg-amber-500';
+  else if (clamped >= 50) barColor = 'bg-yellow-500';
+
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
+        <div
+          className={'h-full rounded-full transition-all ' + barColor}
+          style={{ width: `${clamped}%` }}
+        />
+      </div>
+      <span
+        className={
+          'w-14 text-right font-mono text-xs ' +
+          (isCritical ? 'text-red-400 font-semibold' : 'text-slate-300')
+        }
+      >
+        {clamped.toFixed(1)}%
+      </span>
+    </div>
   );
 }

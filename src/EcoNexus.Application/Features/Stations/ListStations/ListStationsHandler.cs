@@ -29,6 +29,7 @@ internal sealed class ListStationsHandler
                 s.Code.Value,
                 s.Location.Latitude,
                 s.Location.Longitude,
+                s.Capacity.Kilograms,
                 s.CurrentFill.Percent,
                 s.PrimaryCategory.ToString(),
                 s.Status.ToString(),

@@ -6,6 +6,7 @@ public sealed record StationListItemResponse(
     string Code,
     double Latitude,
     double Longitude,
+    double CapacityKilograms,
     double CurrentFillPercent,
     string PrimaryCategory,
     string Status,
