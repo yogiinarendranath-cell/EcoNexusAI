@@ -1,6 +1,7 @@
 ﻿import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { fetchStations } from './stationsApi';
+import UserMenu from '../auth/UserMenu';
 import type { StationListItem, StationStatus } from '../../types/station';
 
 export default function StationsPage() {
@@ -23,9 +24,12 @@ export default function StationsPage() {
               <div className="text-xs text-slate-400">Smart Waste & Recycling Network</div>
             </div>
           </Link>
-          <Link to="/" className="text-sm text-slate-300 hover:text-white transition">
-            ← Back
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/" className="text-sm text-slate-300 hover:text-white transition">
+              ← Back
+            </Link>
+            <UserMenu />
+          </div>
         </div>
       </header>
 

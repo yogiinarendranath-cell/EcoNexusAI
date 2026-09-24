@@ -1,4 +1,5 @@
 ﻿import { Link } from 'react-router-dom';
+import UserMenu from '../auth/UserMenu';
 
 export default function LandingPage() {
   return (
@@ -15,16 +16,14 @@ export default function LandingPage() {
               <div className="text-xs text-slate-400">Smart Waste & Recycling Network</div>
             </div>
           </div>
-          <nav className="flex items-center gap-4 text-sm">
-            <Link to="/login" className="text-slate-300 hover:text-white transition">
-              Sign in
-            </Link>
+          <nav className="flex items-center gap-4">
             <Link
               to="/stations"
-              className="px-4 py-2 rounded-lg bg-emerald-500 text-slate-950 font-medium hover:bg-emerald-400 transition"
+              className="px-4 py-2 rounded-lg bg-emerald-500 text-slate-950 font-medium hover:bg-emerald-400 transition text-sm"
             >
               View stations
             </Link>
+            <UserMenu />
           </nav>
         </div>
       </header>
