@@ -1,6 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using EcoNexus.Application.Features.Citizen.FileReport;
 using EcoNexus.Application.Features.Citizen.GetProfile;
+using EcoNexus.Application.Features.Citizen.ListMyReports;
 using EcoNexus.Application.Features.Citizen.ListPointTransactions;
 using EcoNexus.Application.Features.Citizen.ListRewards;
 using EcoNexus.Application.Features.Citizen.RecordStationVisit;
@@ -112,6 +114,42 @@ public sealed class CitizenController : ControllerBase
             cancellationToken);
 
         return Ok(response);
+    }
+
+    /// <summary>Files a citizen report against a waste station.</summary>
+    [HttpPost("reports")]
+    [Authorize(Roles = EcoNexusRoles.Citizen)]
+    [ProducesResponseType(typeof(FileReportResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> FileReport(
+        [FromBody] FileReportRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetCurrentUserId();
+
+        var response = await _sender.Send(
+            new FileReportCommand(userId, request),
+            cancellationToken);
+
+        return CreatedAtAction(nameof(ListMyReports), new { id = response.Id }, response);
+    }
+
+    /// <summary>Lists all reports filed by the current citizen.</summary>
+    [HttpGet("reports/mine")]
+    [Authorize(Roles = EcoNexusRoles.Citizen)]
+    [ProducesResponseType(typeof(IReadOnlyList<CitizenReportResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ListMyReports(CancellationToken cancellationToken)
+    {
+        var userId = GetCurrentUserId();
+
+        var reports = await _sender.Send(
+            new ListMyReportsQuery(userId),
+            cancellationToken);
+
+        return Ok(reports);
     }
 
     /// <summary>

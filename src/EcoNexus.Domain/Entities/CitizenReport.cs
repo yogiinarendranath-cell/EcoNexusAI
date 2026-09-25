@@ -13,6 +13,7 @@ public sealed class CitizenReport : AggregateRoot
 {
     public Guid FiledByUserId { get; private set; }
     public Guid StationId { get; private set; }
+    public CitizenReportType? ReportType { get; private set; }
     public string Description { get; private set; }
     public string? PhotoUrl { get; private set; }
     public ReportStatus Status { get; private set; }
@@ -30,12 +31,14 @@ public sealed class CitizenReport : AggregateRoot
     private CitizenReport(
         Guid filedByUserId,
         Guid stationId,
+        CitizenReportType reportType,
         string description,
         string? photoUrl,
         DateTimeOffset filedAt)
     {
         FiledByUserId = filedByUserId;
         StationId = stationId;
+        ReportType = reportType;
         Description = description;
         PhotoUrl = photoUrl;
         Status = ReportStatus.New;
@@ -45,6 +48,7 @@ public sealed class CitizenReport : AggregateRoot
     public static CitizenReport File(
         Guid filedByUserId,
         Guid stationId,
+        CitizenReportType reportType,
         string description,
         string? photoUrl,
         DateTimeOffset filedAt)
@@ -72,6 +76,7 @@ public sealed class CitizenReport : AggregateRoot
         var report = new CitizenReport(
             filedByUserId,
             stationId,
+            reportType,
             description.Trim(),
             string.IsNullOrWhiteSpace(photoUrl) ? null : photoUrl.Trim(),
             filedAt);

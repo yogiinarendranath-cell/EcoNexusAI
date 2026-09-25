@@ -27,6 +27,17 @@ public sealed class CitizenReportConfiguration : IEntityTypeConfiguration<Citize
         builder.HasIndex(r => r.FiledByUserId)
             .HasDatabaseName("IX_CitizenReports_FiledByUserId");
 
+        // CitizenReportType as string. Nullable for backwards compatibility:
+        // rows created before this column existed will have NULL and are
+        // treated as "Other" by the application.
+        builder.Property(r => r.ReportType)
+            .HasConversion<string>()
+            .HasColumnName("ReportType")
+            .HasMaxLength(30);
+
+        builder.HasIndex(r => r.ReportType)
+            .HasDatabaseName("IX_CitizenReports_ReportType");
+
         builder.Property(r => r.Description)
             .HasColumnName("Description")
             .HasMaxLength(2000)
@@ -36,7 +47,6 @@ public sealed class CitizenReportConfiguration : IEntityTypeConfiguration<Citize
             .HasColumnName("PhotoUrl")
             .HasMaxLength(2048);
 
-        // ReportStatus as string
         builder.Property(r => r.Status)
             .HasConversion<string>()
             .HasColumnName("Status")

@@ -14,6 +14,7 @@ public sealed class CitizenReportTests
         return CitizenReport.File(
             Guid.NewGuid(),
             Guid.NewGuid(),
+            CitizenReportType.OverflowingBin,
             description,
             photoUrl,
             DateTimeOffset.UtcNow);
@@ -36,14 +37,14 @@ public sealed class CitizenReportTests
     public void File_WithEmptyUserId_Throws()
     {
         Assert.Throws<ArgumentException>(() =>
-            CitizenReport.File(Guid.Empty, Guid.NewGuid(), "desc", null, DateTimeOffset.UtcNow));
+            CitizenReport.File(Guid.Empty, Guid.NewGuid(), CitizenReportType.OverflowingBin, "desc", null, DateTimeOffset.UtcNow));
     }
 
     [Fact]
     public void File_WithEmptyStationId_Throws()
     {
         Assert.Throws<ArgumentException>(() =>
-            CitizenReport.File(Guid.NewGuid(), Guid.Empty, "desc", null, DateTimeOffset.UtcNow));
+            CitizenReport.File(Guid.NewGuid(), Guid.Empty, CitizenReportType.OverflowingBin, "desc", null, DateTimeOffset.UtcNow));
     }
 
     [Theory]
@@ -52,7 +53,7 @@ public sealed class CitizenReportTests
     public void File_WithEmptyDescription_Throws(string description)
     {
         Assert.Throws<ArgumentException>(() =>
-            CitizenReport.File(Guid.NewGuid(), Guid.NewGuid(), description, null, DateTimeOffset.UtcNow));
+            CitizenReport.File(Guid.NewGuid(), Guid.NewGuid(), CitizenReportType.OverflowingBin, description, null, DateTimeOffset.UtcNow));
     }
 
     [Fact]
@@ -61,7 +62,7 @@ public sealed class CitizenReportTests
         var huge = new string('x', 2001);
 
         Assert.Throws<ArgumentException>(() =>
-            CitizenReport.File(Guid.NewGuid(), Guid.NewGuid(), huge, null, DateTimeOffset.UtcNow));
+            CitizenReport.File(Guid.NewGuid(), Guid.NewGuid(), CitizenReportType.OverflowingBin, huge, null, DateTimeOffset.UtcNow));
     }
 
     [Fact]

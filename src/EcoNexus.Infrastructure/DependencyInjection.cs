@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IRecyclingFacilityRepository, RecyclingFacilityRepository>();
         services.AddScoped<ICitizenProfileRepository, CitizenProfileRepository>();
         services.AddScoped<IRewardRepository, RewardRepository>();
+        services.AddScoped<ICitizenReportRepository, CitizenReportRepository>();
         services.AddScoped<IUserDirectory, UserDirectory>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddSingleton<IOperationsNotifier, SignalROperationsNotifier>();
