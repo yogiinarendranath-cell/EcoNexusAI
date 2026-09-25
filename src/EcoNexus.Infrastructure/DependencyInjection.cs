@@ -1,4 +1,6 @@
 ﻿using EcoNexus.Application.Abstractions.Dispatching;
+using EcoNexus.Application.Abstractions.Identity;
+using EcoNexus.Infrastructure.Identity;
 using EcoNexus.Application.Abstractions.Persistence;
 using EcoNexus.Application.Abstractions.Realtime;
 using EcoNexus.Infrastructure.Dispatching;
@@ -24,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IRecyclingFacilityRepository, RecyclingFacilityRepository>();
         services.AddScoped<ICitizenProfileRepository, CitizenProfileRepository>();
         services.AddScoped<IRewardRepository, RewardRepository>();
+        services.AddScoped<IUserDirectory, UserDirectory>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddSingleton<IOperationsNotifier, SignalROperationsNotifier>();
 

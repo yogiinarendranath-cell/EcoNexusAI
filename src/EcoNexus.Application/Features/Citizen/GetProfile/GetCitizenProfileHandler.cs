@@ -1,4 +1,5 @@
-﻿using EcoNexus.Application.Abstractions.Persistence;
+﻿using EcoNexus.Application.Abstractions.Identity;
+using EcoNexus.Application.Abstractions.Persistence;
 using EcoNexus.Contracts.Citizen;
 using EcoNexus.Domain.Entities;
 using EcoNexus.Domain.Services;
@@ -10,10 +11,14 @@ internal sealed class GetCitizenProfileHandler
     : IRequestHandler<GetCitizenProfileQuery, CitizenProfileResponse>
 {
     private readonly ICitizenProfileRepository _repository;
+    private readonly IUserDirectory _userDirectory;
 
-    public GetCitizenProfileHandler(ICitizenProfileRepository repository)
+    public GetCitizenProfileHandler(
+        ICitizenProfileRepository repository,
+        IUserDirectory userDirectory)
     {
         _repository = repository;
+        _userDirectory = userDirectory;
     }
 
     public async Task<CitizenProfileResponse> Handle(
@@ -24,10 +29,16 @@ internal sealed class GetCitizenProfileHandler
 
         if (profile is null)
         {
-            // First-touch provisioning: create the profile on demand.
+            // First-touch provisioning. Pull the display name from Identity
+            // so the profile reflects the user's chosen name, not the fallback.
+            var resolvedDisplayName = await _userDirectory.GetDisplayNameAsync(
+                request.UserId,
+                cancellationToken)
+                ?? request.FallbackDisplayName;
+
             profile = CitizenProfile.Create(
                 request.UserId,
-                request.FallbackDisplayName,
+                resolvedDisplayName,
                 DateTimeOffset.UtcNow);
 
             await _repository.AddAsync(profile, cancellationToken);
