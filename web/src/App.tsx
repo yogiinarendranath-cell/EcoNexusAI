@@ -5,6 +5,8 @@ import VehiclesPage from './features/vehicles/VehiclesPage';
 import JobsPage from './features/jobs/JobsPage';
 import JobDetailPage from './features/jobs/JobDetailPage';
 import LoginPage from './features/auth/LoginPage';
+import RecyclingPage from './features/recycling/RecyclingPage';
+import FacilityDetailPage from './features/recycling/FacilityDetailPage';
 
 export default function App() {
   return (
@@ -15,6 +17,8 @@ export default function App() {
       <Route path="/vehicles" element={<VehiclesPage />} />
       <Route path="/jobs" element={<JobsPage />} />
       <Route path="/jobs/:id" element={<JobDetailPage />} />
+      <Route path="/recycling" element={<RecyclingPage />} />
+      <Route path="/recycling/:id" element={<FacilityDetailPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
