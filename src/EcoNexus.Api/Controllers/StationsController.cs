@@ -1,11 +1,13 @@
 ﻿using EcoNexus.Application.Features.Stations.CreateStation;
 using EcoNexus.Application.Features.Stations.DeleteStation;
-using EcoNexus.Application.Features.Stations.UpdateStation;using EcoNexus.Application.Features.Stations.GetStationById;
+using EcoNexus.Application.Features.Stations.UpdateStation;
+using EcoNexus.Application.Features.Stations.GetStationById;
 using EcoNexus.Application.Features.Stations.ListStations;
 using EcoNexus.Application.Features.Stations.RecordStationReading;
 using EcoNexus.Contracts.Common;
 using EcoNexus.Contracts.Stations;
 using MediatR;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcoNexus.Api.Controllers;
@@ -51,6 +53,7 @@ public sealed class StationsController : ControllerBase
     }
 
     /// <summary>List stations with pagination and filters.</summary>
+    [OutputCache(PolicyName = "StationsList")]
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<StationListItemResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> List(

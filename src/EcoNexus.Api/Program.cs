@@ -144,6 +144,24 @@ builder.Services.AddHostedService<RoleSeeder>();
 // Controllers + Swagger
 // ============================================================
 builder.Services.AddControllers();
+
+// ============================================================
+// Output caching (HTTP-level cache for idempotent reads)
+// ============================================================
+builder.Services.AddOutputCache(options =>
+{
+    options.AddPolicy("StationsList", policy =>
+    {
+        policy
+            .Expire(TimeSpan.FromSeconds(30))
+            .SetVaryByQuery("*");
+    });
+
+    options.AddPolicy("FacilitiesList", policy =>
+    {
+        policy.Expire(TimeSpan.FromSeconds(60));
+    });
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -216,6 +234,10 @@ app.UseCors(DevCorsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Output caching must run after authorization so cached responses
+// are only served to callers who already passed auth checks.
+app.UseOutputCache();
 
 app.MapControllers();
 
