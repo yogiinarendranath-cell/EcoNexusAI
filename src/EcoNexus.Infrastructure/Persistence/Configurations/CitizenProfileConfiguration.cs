@@ -55,5 +55,14 @@ public sealed class CitizenProfileConfiguration : IEntityTypeConfiguration<Citiz
 
         builder.Navigation(c => c.Transactions)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        // Child collection: AI waste classifications.
+        builder.HasMany(c => c.Classifications)
+            .WithOne()
+            .HasForeignKey("CitizenProfileId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(c => c.Classifications)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

@@ -23,11 +23,13 @@ internal sealed class CitizenProfileRepository : ICitizenProfileRepository
     public Task<CitizenProfile?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => _context.CitizenProfiles
             .Include(c => c.Transactions)
+            .Include(c => c.Classifications)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
     public Task<CitizenProfile?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         => _context.CitizenProfiles
             .Include(c => c.Transactions)
+            .Include(c => c.Classifications)
             .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
 
     public Task<bool> ExistsForUserAsync(Guid userId, CancellationToken cancellationToken = default)
