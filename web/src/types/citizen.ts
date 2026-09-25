@@ -66,3 +66,34 @@ export interface RedeemRewardResponse {
   newBalance: number;
   redeemedAt: string;
 }
+
+/** Request body for POST /api/v1/citizen/classify. */
+export interface ClassifyWasteRequest {
+  imageUrl: string;
+}
+
+/** Response from POST /api/v1/citizen/classify. */
+export interface ClassifyWasteResponse {
+  classificationId: string;
+  category: string;
+  confidence: number;
+  isRecyclable: boolean;
+  isCompostable: boolean;
+  disposalInstruction: string;
+  isConfident: boolean;
+  providerName: string;
+  classifiedAt: string;
+}
+
+/** A single AI classification in the citizen's history. */
+export interface ClassificationListItem {
+  id: string;
+  category: string;
+  confidence: number;
+  isRecyclable: boolean;
+  isCompostable: boolean;
+  disposalInstruction: string;
+  imageReference: string;
+  providerName: string;
+  classifiedAt: string;
+}

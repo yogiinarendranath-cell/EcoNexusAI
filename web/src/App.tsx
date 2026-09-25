@@ -10,6 +10,7 @@ import CitizenLayout from './features/citizen/CitizenLayout';
 import CitizenHome from './features/citizen/CitizenHome';
 import CitizenStations from './features/citizen/CitizenStations';
 import CitizenReport from './features/citizen/CitizenReport';
+import CitizenClassify from './features/citizen/CitizenClassify';
 import CitizenPoints from './features/citizen/CitizenPoints';
 import CitizenProfile from './features/citizen/CitizenProfile';
 import RecyclingPage from './features/recycling/RecyclingPage';
@@ -37,6 +38,7 @@ export default function App() {
         <Route index element={<CitizenHome />} />
         <Route path="stations" element={<CitizenStations />} />
         <Route path="report" element={<CitizenReport />} />
+        <Route path="classify" element={<CitizenClassify />} />
         <Route path="points" element={<CitizenPoints />} />
         <Route path="profile" element={<CitizenProfile />} />
       </Route>

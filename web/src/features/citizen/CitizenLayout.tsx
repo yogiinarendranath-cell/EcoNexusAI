@@ -4,6 +4,7 @@ const TABS = [
   { to: '/app', label: 'Home', icon: '🏠', end: true },
   { to: '/app/stations', label: 'Stations', icon: '📍', end: false },
   { to: '/app/report', label: 'Report', icon: '📸', end: false },
+  { to: '/app/classify', label: 'Classify', icon: '🔬', end: false },
   { to: '/app/points', label: 'Points', icon: '⭐', end: false },
   { to: '/app/profile', label: 'Profile', icon: '👤', end: false },
 ];
@@ -18,7 +19,7 @@ export default function CitizenLayout() {
 
       {/* Bottom navigation — fixed on mobile, centered on desktop */}
       <nav className="fixed bottom-0 left-0 right-0 border-t border-slate-800 bg-slate-950/95 backdrop-blur">
-        <div className="max-w-md mx-auto grid grid-cols-5">
+        <div className="max-w-md mx-auto grid grid-cols-6">
           {TABS.map((tab) => (
             <NavLink
               key={tab.to}
