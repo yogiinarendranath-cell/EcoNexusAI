@@ -1,4 +1,5 @@
-﻿using EcoNexus.Domain.Entities;
+﻿using EcoNexus.Application.Abstractions.Persistence;
+using EcoNexus.Domain.Entities;
 using EcoNexus.Domain.ValueObjects;
 using EcoNexus.Infrastructure.Persistence;
 using EcoNexus.Infrastructure.Persistence.Repositories;
