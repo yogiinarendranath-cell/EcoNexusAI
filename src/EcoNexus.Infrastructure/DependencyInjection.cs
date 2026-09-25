@@ -25,10 +25,14 @@ public static class DependencyInjection
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        // In-memory cache used by decorators (e.g. CachedRecyclingFacilityRepository).
+        services.AddMemoryCache();
+
         services.AddScoped<IWasteStationRepository, WasteStationRepository>();
         services.AddScoped<ICollectionVehicleRepository, CollectionVehicleRepository>();
         services.AddScoped<ICollectionJobRepository, CollectionJobRepository>();
-        services.AddScoped<IRecyclingFacilityRepository, RecyclingFacilityRepository>();
+        services.AddScoped<RecyclingFacilityRepository>();
+        services.AddScoped<IRecyclingFacilityRepository, CachedRecyclingFacilityRepository>();
         services.AddScoped<ICitizenProfileRepository, CitizenProfileRepository>();
         services.AddScoped<IRewardRepository, RewardRepository>();
         services.AddScoped<ICitizenReportRepository, CitizenReportRepository>();
