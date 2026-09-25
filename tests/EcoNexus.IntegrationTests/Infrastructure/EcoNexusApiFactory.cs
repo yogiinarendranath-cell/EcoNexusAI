@@ -105,10 +105,20 @@ public sealed class EcoNexusApiFactory : WebApplicationFactory<Program>, IAsyncL
 
     public new async Task DisposeAsync()
     {
-        // 1. Dispose host first (stops background workers, releases DbContext pool)
-        await base.DisposeAsync();
+        // 1. Dispose host first (stops background workers, releases DbContext pool).
+        //    Wrapped so a host-disposal failure does not prevent DB cleanup.
+        try
+        {
+            await base.DisposeAsync();
+        }
+        catch
+        {
+            // Swallow — we still want to attempt DB cleanup below.
+        }
 
-        // 2. Then drop the DB
+        // 2. Then drop the DB. `DropDatabaseAsync` already swallows
+        //    ObjectDisposedException. Any other failure here is logged by
+        //    xUnit but should not prevent the test run from completing.
         await DropDatabaseAsync();
     }
 }

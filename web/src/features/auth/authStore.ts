@@ -36,6 +36,7 @@ type AuthState = {
 };
 
 const ACCESS_TOKEN_KEY = 'econexus.accessToken';
+const REFRESH_TOKEN_KEY = 'econexus.refreshToken';
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -61,6 +62,7 @@ export const useAuthStore = create<AuthState>()(
         // Remove the mirror too, otherwise the interceptor keeps sending a
         // dead token after logout.
         localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
 
         set({
           user: null,

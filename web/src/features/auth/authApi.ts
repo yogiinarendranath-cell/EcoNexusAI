@@ -33,6 +33,32 @@ export async function login(
 }
 
 /**
+ * Response shape from POST /api/v1/auth/refresh.
+ * Mirrors EcoNexus.Contracts.Auth.AuthResponse — the API returns a fresh
+ * pair (new refresh token, new access token) on every successful refresh.
+ */
+export type RefreshResponse = {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: string;
+  user: AuthUser;
+};
+
+/**
+ * Exchanges a refresh token for a fresh token pair. The API revokes the
+ * incoming refresh token and returns a new one — callers must persist both.
+ *
+ * Note: `apiClient` already handles this flow automatically via its 401
+ * interceptor. This function is exposed for explicit flows (e.g. on app
+ * boot, refreshing before the access token expires).
+ */
+export async function refresh(refreshToken: string): Promise<RefreshResponse> {
+  const { data } = await apiClient.post<RefreshResponse>('/v1/auth/refresh', {
+    refreshToken,
+  });
+  return data;
+}
+/**
  * Revokes the refresh token server-side. Safe to call even if the token is
  * already expired — the API treats unknown/expired tokens as no-ops.
  */
