@@ -27,7 +27,7 @@ internal sealed class MockWasteClassificationService : IWasteClassificationServi
 
         var hash = StableHash(imageUrl);
         var category = PickCategory(hash);
-        var confidence = 0.75 + (hash % 24) / 100.0;  // 0.75 – 0.98
+        var confidence = 0.75 + (Math.Abs(hash) % 24) / 100.0;  // 0.75 – 0.98
 
         var result = BuildResult(category, confidence);
 

@@ -1,6 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using EcoNexus.Application.Features.Citizen.FileReport;
+using EcoNexus.Application.Features.Citizen.ClassifyWaste;
+using EcoNexus.Application.Features.Citizen.ListClassifications;
 using EcoNexus.Application.Features.Citizen.GetProfile;
 using EcoNexus.Application.Features.Citizen.ListMyReports;
 using EcoNexus.Application.Features.Citizen.ListPointTransactions;
@@ -150,6 +152,47 @@ public sealed class CitizenController : ControllerBase
             cancellationToken);
 
         return Ok(reports);
+    }
+
+    /// <summary>
+    /// Classifies a waste image via the configured AI provider and
+    /// records the result on the citizen's profile.
+    /// </summary>
+    [HttpPost("classify")]
+    [Authorize(Roles = EcoNexusRoles.Citizen)]
+    [ProducesResponseType(typeof(ClassifyWasteResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> ClassifyWaste(
+        [FromBody] ClassifyWasteRequest request,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetCurrentUserId();
+
+        var response = await _sender.Send(
+            new ClassifyWasteCommand(userId, request.ImageUrl),
+            cancellationToken);
+
+        return Ok(response);
+    }
+
+    /// <summary>Lists the current citizen's AI classification history, newest first.</summary>
+    [HttpGet("classifications")]
+    [Authorize(Roles = EcoNexusRoles.Citizen)]
+    [ProducesResponseType(typeof(IReadOnlyList<ClassificationListItemResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ListClassifications(CancellationToken cancellationToken)
+    {
+        var userId = GetCurrentUserId();
+
+        var classifications = await _sender.Send(
+            new ListClassificationsQuery(userId),
+            cancellationToken);
+
+        return Ok(classifications);
     }
 
     /// <summary>
