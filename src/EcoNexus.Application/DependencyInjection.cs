@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using EcoNexus.Application.Behaviors;
 using FluentValidation;
+using EcoNexus.Application.Features.Operations.Assistant.Tools;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EcoNexus.Application;
@@ -31,6 +32,18 @@ public static class DependencyInjection
 
         // Register all FluentValidation validators in this assembly.
         services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
+
+        // ---- Operations assistant ----
+        // Register every tool. The IToolRegistry aggregates them.
+        services.AddScoped<IAssistantTool, GetCriticalStationsTool>();
+        services.AddScoped<IAssistantTool, GetStationCountTool>();
+        services.AddScoped<IAssistantTool, GetRecyclingMetricsTool>();
+        services.AddScoped<IAssistantTool, GetActiveFacilitiesTool>();
+        services.AddScoped<IAssistantTool, GetRecentJobsTool>();
+        services.AddScoped<IAssistantTool, GetActiveVehiclesTool>();
+        services.AddScoped<IAssistantTool, GetWasteByCategoryTool>();
+        services.AddScoped<IAssistantTool, GetFacilityOverviewTool>();
+        services.AddScoped<IToolRegistry, ToolRegistry>();
 
         return services;
     }
