@@ -14,6 +14,7 @@ using EcoNexus.Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace EcoNexus.Api.Controllers;
 
@@ -159,6 +160,7 @@ public sealed class CitizenController : ControllerBase
     /// records the result on the citizen's profile.
     /// </summary>
     [HttpPost("classify")]
+    [EnableRateLimiting("writes")]
     [Authorize(Roles = EcoNexusRoles.Citizen)]
     [ProducesResponseType(typeof(ClassifyWasteResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

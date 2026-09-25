@@ -4,6 +4,7 @@ using EcoNexus.Application.Abstractions.Identity;
 using EcoNexus.Contracts.Auth;
 using EcoNexus.Infrastructure.Identity;
 using FluentValidation;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +52,7 @@ public sealed class AuthController : ControllerBase
     // POST /api/v1/auth/register
     // ============================================================
     [HttpPost("register")]
+    [EnableRateLimiting("auth")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -108,6 +110,7 @@ public sealed class AuthController : ControllerBase
     // POST /api/v1/auth/login
     // ============================================================
     [HttpPost("login")]
+    [EnableRateLimiting("auth")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -162,6 +165,7 @@ public sealed class AuthController : ControllerBase
     // POST /api/v1/auth/refresh
     // ============================================================
     [HttpPost("refresh")]
+    [EnableRateLimiting("auth")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]

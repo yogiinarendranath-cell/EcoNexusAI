@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using EcoNexus.Infrastructure.Realtime;
 using EcoNexus.Api.Middleware;
+using EcoNexus.Api.Extensions;
 using EcoNexus.Application;
 using EcoNexus.Application.Abstractions.Identity;
 using EcoNexus.Infrastructure;
@@ -208,6 +209,11 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
+// ============================================================
+// Rate limiting (per-endpoint policies; endpoints opt in)
+// ============================================================
+builder.Services.AddEcoNexusRateLimiting();
+
 var app = builder.Build();
 
 // ============================================================
@@ -231,6 +237,10 @@ app.UseHttpsRedirection();
 // CORS must sit before auth so preflight OPTIONS requests are answered
 // without hitting the authentication middleware.
 app.UseCors(DevCorsPolicy);
+
+// Rate limiter runs before authentication so anonymous endpoints
+// (login, register) are also protected from brute-force attempts.
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

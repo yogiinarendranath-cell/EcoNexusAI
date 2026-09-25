@@ -52,7 +52,22 @@ public static class DependencyInjection
 
         if (string.Equals(provider, "Ollama", StringComparison.OrdinalIgnoreCase))
         {
-            services.AddHttpClient<IWasteClassificationService, OllamaWasteClassificationService>();
+            services
+                .AddHttpClient<IWasteClassificationService, OllamaWasteClassificationService>()
+                .AddStandardResilienceHandler(options =>
+            {
+                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(60);
+                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(20);
+
+                options.Retry.MaxRetryAttempts = 2;
+                options.Retry.BackoffType = Polly.DelayBackoffType.Exponential;
+                options.Retry.UseJitter = true;
+
+                options.CircuitBreaker.FailureRatio = 0.5;
+                options.CircuitBreaker.MinimumThroughput = 5;
+                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+                options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(30);
+            });
         }
         else
         {
@@ -64,7 +79,22 @@ public static class DependencyInjection
         // Same provider flag drives both AI subsystems.
         if (string.Equals(provider, "Ollama", StringComparison.OrdinalIgnoreCase))
         {
-            services.AddHttpClient<IAssistantLlm, OllamaAssistantLlm>();
+            services
+                .AddHttpClient<IAssistantLlm, OllamaAssistantLlm>()
+                .AddStandardResilienceHandler(options =>
+            {
+                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(60);
+                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(20);
+
+                options.Retry.MaxRetryAttempts = 2;
+                options.Retry.BackoffType = Polly.DelayBackoffType.Exponential;
+                options.Retry.UseJitter = true;
+
+                options.CircuitBreaker.FailureRatio = 0.5;
+                options.CircuitBreaker.MinimumThroughput = 5;
+                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+                options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(30);
+            });
         }
         else
         {

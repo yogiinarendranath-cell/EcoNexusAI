@@ -9,6 +9,7 @@ using EcoNexus.Contracts.Stations;
 using MediatR;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace EcoNexus.Api.Controllers;
 
@@ -25,6 +26,7 @@ public sealed class StationsController : ControllerBase
 
     /// <summary>Create a new waste station.</summary>
     [HttpPost]
+    [EnableRateLimiting("writes")]
     [ProducesResponseType(typeof(CreateStationResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -66,6 +68,7 @@ public sealed class StationsController : ControllerBase
 
     /// <summary>Record a sensor reading for a station.</summary>
     [HttpPost("{id:guid}/readings")]
+    [EnableRateLimiting("writes")]
     [ProducesResponseType(typeof(RecordReadingResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -83,6 +86,7 @@ public sealed class StationsController : ControllerBase
 
     /// <summary>Update the mutable metadata of an existing station.</summary>
     [HttpPut("{id:guid}")]
+    [EnableRateLimiting("writes")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -97,6 +101,7 @@ public sealed class StationsController : ControllerBase
 
     /// <summary>Delete a station. Idempotent.</summary>
     [HttpDelete("{id:guid}")]
+    [EnableRateLimiting("writes")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
         Guid id,

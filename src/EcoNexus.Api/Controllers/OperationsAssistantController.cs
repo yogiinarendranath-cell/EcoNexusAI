@@ -2,6 +2,7 @@
 using EcoNexus.Application.Features.Operations.Assistant;
 using EcoNexus.Contracts.Operations;
 using MediatR;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +30,7 @@ public sealed class OperationsAssistantController : ControllerBase
     /// Example: "Which stations are critical right now?"
     /// </summary>
     [HttpPost("ask")]
+    [EnableRateLimiting("assistant")]
     [ProducesResponseType(typeof(AskAssistantResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
