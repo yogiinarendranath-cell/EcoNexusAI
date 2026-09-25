@@ -8,6 +8,8 @@ import LoginPage from './features/auth/LoginPage';
 import RequireCitizen from './features/citizen/RequireCitizen';
 import CitizenLayout from './features/citizen/CitizenLayout';
 import CitizenHome from './features/citizen/CitizenHome';
+import CitizenStations from './features/citizen/CitizenStations';
+import CitizenReport from './features/citizen/CitizenReport';
 import RecyclingPage from './features/recycling/RecyclingPage';
 import FacilityDetailPage from './features/recycling/FacilityDetailPage';
 
@@ -31,6 +33,8 @@ export default function App() {
         }
       >
         <Route index element={<CitizenHome />} />
+        <Route path="stations" element={<CitizenStations />} />
+        <Route path="report" element={<CitizenReport />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
