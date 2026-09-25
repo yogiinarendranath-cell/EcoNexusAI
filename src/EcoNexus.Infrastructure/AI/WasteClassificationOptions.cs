@@ -19,6 +19,9 @@ public sealed class WasteClassificationOptions
     /// <summary>Ollama-specific settings. Ignored when Provider is Mock.</summary>
     public OllamaOptions Ollama { get; set; } = new();
 
+    /// <summary>Assistant-specific settings. Bound from AI:Assistant.</summary>
+    public AssistantOptions Assistant { get; set; } = new();
+
     public sealed class OllamaOptions
     {
         /// <summary>Base URL of the local Ollama server.</summary>
@@ -32,5 +35,14 @@ public sealed class WasteClassificationOptions
         /// take 30–90 seconds; give it room.
         /// </summary>
         public int TimeoutSeconds { get; set; } = 120;
+    }
+
+    public sealed class AssistantOptions
+    {
+        /// <summary>Ollama model for the assistant (e.g. llama3).</summary>
+        public string OllamaModel { get; set; } = "llama3";
+
+        /// <summary>Timeout in seconds for a single assistant call.</summary>
+        public int TimeoutSeconds { get; set; } = 60;
     }
 }

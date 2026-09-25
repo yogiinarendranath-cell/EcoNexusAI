@@ -53,6 +53,18 @@ public static class DependencyInjection
             services.AddScoped<IWasteClassificationService, MockWasteClassificationService>();
         }
 
+
+        // ---- Operations assistant LLM ----
+        // Same provider flag drives both AI subsystems.
+        if (string.Equals(provider, "Ollama", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddHttpClient<IAssistantLlm, OllamaAssistantLlm>();
+        }
+        else
+        {
+            services.AddScoped<IAssistantLlm, MockAssistantLlm>();
+        }
+
         return services;
     }
 }
