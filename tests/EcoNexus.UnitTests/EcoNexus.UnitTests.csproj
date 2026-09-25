@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\EcoNexus.Application\EcoNexus.Application.csproj" />
     <ProjectReference Include="..\..\src\EcoNexus.Domain\EcoNexus.Domain.csproj" />
+    <ProjectReference Include="..\..\src\EcoNexus.Infrastructure\EcoNexus.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
