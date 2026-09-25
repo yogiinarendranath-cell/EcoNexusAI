@@ -128,7 +128,7 @@ builder.Services.AddScoped<ITokenService, JwtTokenService>();
 // Application + Infrastructure layers
 // ============================================================
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // ============================================================
 // SignalR

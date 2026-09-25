@@ -1,11 +1,14 @@
-﻿using EcoNexus.Application.Abstractions.Dispatching;
+﻿using EcoNexus.Application.Abstractions.AI;
+using EcoNexus.Application.Abstractions.Dispatching;
 using EcoNexus.Application.Abstractions.Identity;
 using EcoNexus.Infrastructure.Identity;
 using EcoNexus.Application.Abstractions.Persistence;
 using EcoNexus.Application.Abstractions.Realtime;
+using EcoNexus.Infrastructure.AI;
 using EcoNexus.Infrastructure.Dispatching;
 using EcoNexus.Infrastructure.Persistence.Repositories;
 using EcoNexus.Infrastructure.Realtime;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EcoNexus.Infrastructure;
@@ -16,7 +19,9 @@ namespace EcoNexus.Infrastructure;
 /// </summary>
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -30,6 +35,23 @@ public static class DependencyInjection
         services.AddScoped<IUserDirectory, UserDirectory>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddSingleton<IOperationsNotifier, SignalROperationsNotifier>();
+
+        // ---- AI waste classification ----
+        // Binds the "AI" config section, then picks the provider.
+        // Defaults to Mock so development works without any local model.
+        services.Configure<WasteClassificationOptions>(
+            configuration.GetSection(WasteClassificationOptions.SectionName));
+
+        var provider = configuration[$"{WasteClassificationOptions.SectionName}:Provider"] ?? "Mock";
+
+        if (string.Equals(provider, "Ollama", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddHttpClient<IWasteClassificationService, OllamaWasteClassificationService>();
+        }
+        else
+        {
+            services.AddScoped<IWasteClassificationService, MockWasteClassificationService>();
+        }
 
         return services;
     }

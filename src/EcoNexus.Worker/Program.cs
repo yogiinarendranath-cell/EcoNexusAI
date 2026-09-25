@@ -34,7 +34,7 @@ builder.Services.AddEcoNexusPersistence(connectionString);
 // Application + Infrastructure
 // ============================================================
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // ============================================================
 // IoT Simulator
