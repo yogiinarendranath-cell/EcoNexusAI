@@ -31,7 +31,8 @@ public static class DependencyInjection
         services.AddScoped<IWasteStationRepository, WasteStationRepository>();
         services.AddScoped<ICollectionVehicleRepository, CollectionVehicleRepository>();
         services.AddScoped<ICollectionJobRepository, CollectionJobRepository>();
-        services.AddScoped<RecyclingFacilityRepository>();
+        services.AddKeyedScoped<IRecyclingFacilityRepository, RecyclingFacilityRepository>(
+            CachedRecyclingFacilityRepository.InnerServiceKey);
         services.AddScoped<IRecyclingFacilityRepository, CachedRecyclingFacilityRepository>();
         services.AddScoped<ICitizenProfileRepository, CitizenProfileRepository>();
         services.AddScoped<IRewardRepository, RewardRepository>();

@@ -1,6 +1,7 @@
 ﻿using EcoNexus.Application.Abstractions.Persistence;
 using EcoNexus.Domain.Entities;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EcoNexus.Infrastructure.Persistence.Repositories;
 
@@ -10,11 +11,16 @@ namespace EcoNexus.Infrastructure.Persistence.Repositories;
 /// endpoint and by three assistant tools, on a dataset that changes
 /// rarely. All write operations evict the cache so the next read is fresh.
 ///
-/// The decorator preserves the exact contract of the interface: callers
-/// cannot tell that caching exists.
+/// Depends on the interface, not the concrete repository, so it can be
+/// tested with any implementation (including hand-written fakes).
+/// The inner implementation is resolved via a keyed service to avoid a
+/// circular dependency on <see cref="IRecyclingFacilityRepository"/>.
 /// </summary>
 internal sealed class CachedRecyclingFacilityRepository : IRecyclingFacilityRepository
 {
+    /// <summary>Key used by the DI registration for the inner (uncached) repository.</summary>
+    internal const string InnerServiceKey = "recycling-facility:inner";
+
     /// <summary>
     /// Single cache key. The interface has no parameters on GetAllAsync,
     /// so one entry per process is sufficient.
@@ -27,11 +33,11 @@ internal sealed class CachedRecyclingFacilityRepository : IRecyclingFacilityRepo
     /// </summary>
     internal static readonly TimeSpan CacheTtl = TimeSpan.FromSeconds(60);
 
-    private readonly RecyclingFacilityRepository _inner;
+    private readonly IRecyclingFacilityRepository _inner;
     private readonly IMemoryCache _cache;
 
     public CachedRecyclingFacilityRepository(
-        RecyclingFacilityRepository inner,
+        [FromKeyedServices(InnerServiceKey)] IRecyclingFacilityRepository inner,
         IMemoryCache cache)
     {
         _inner = inner ?? throw new ArgumentNullException(nameof(inner));

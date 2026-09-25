@@ -1,10 +1,7 @@
 ﻿using EcoNexus.Application.Abstractions.Persistence;
 using EcoNexus.Domain.Entities;
-using EcoNexus.Domain.ValueObjects;
-using EcoNexus.Infrastructure.Persistence;
 using EcoNexus.Infrastructure.Persistence.Repositories;
 using Microsoft.Extensions.Caching.Memory;
-using NSubstitute;
 using Xunit;
 
 namespace EcoNexus.UnitTests.Infrastructure.Caching;
@@ -15,134 +12,157 @@ namespace EcoNexus.UnitTests.Infrastructure.Caching;
 ///   1. Reads within the TTL window do NOT hit the inner repository.
 ///   2. Writes evict the cache so the next read is fresh.
 ///   3. Non-cached reads always pass through.
+///
+/// Uses a hand-written fake instead of NSubstitute: the concrete
+/// repository and DbContext are both sealed, so Castle DynamicProxy
+/// cannot create substitutes for them.
 /// </summary>
 public sealed class CachedRecyclingFacilityRepositoryTests
 {
     [Fact]
     public async Task GetAllAsync_SecondCallWithinTtl_DoesNotHitInnerRepository()
     {
-        // Arrange
-        var inner = Substitute.For<RecyclingFacilityRepository>(Substitute.For<EcoNexusDbContext>());
+        var inner = new FakeRecyclingFacilityRepository();
         var cache = new MemoryCache(new MemoryCacheOptions());
         var sut = new CachedRecyclingFacilityRepository(inner, cache);
-        var facilities = new List<RecyclingFacility>();
 
-        inner.GetAllAsync(Arg.Any<CancellationToken>()).Returns(facilities);
-
-        // Act
         var first = await sut.GetAllAsync(CancellationToken.None);
         var second = await sut.GetAllAsync(CancellationToken.None);
 
-        // Assert: second call was served from cache — inner called only once.
-        await inner.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
+        Assert.Equal(1, inner.GetAllCallCount);
         Assert.Same(first, second);
     }
 
     [Fact]
     public async Task AddAsync_EvictsCache_SoNextReadHitsInnerRepository()
     {
-        // Arrange
-        var inner = Substitute.For<RecyclingFacilityRepository>(Substitute.For<EcoNexusDbContext>());
+        var inner = new FakeRecyclingFacilityRepository();
         var cache = new MemoryCache(new MemoryCacheOptions());
         var sut = new CachedRecyclingFacilityRepository(inner, cache);
-        var facilities = new List<RecyclingFacility>();
 
-        inner.GetAllAsync(Arg.Any<CancellationToken>()).Returns(facilities);
-        inner.AddAsync(Arg.Any<RecyclingFacility>(), Arg.Any<CancellationToken>())
-            .Returns(Task.CompletedTask);
-
-        // Prime the cache
         await sut.GetAllAsync(CancellationToken.None);
-        await inner.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
+        Assert.Equal(1, inner.GetAllCallCount);
 
-        // Act: write evicts
-        var anyFacility = CreateStubFacility();
-        await sut.AddAsync(anyFacility, CancellationToken.None);
+        await sut.AddAsync(FakeRecyclingFacilityRepository.Facility(), CancellationToken.None);
 
-        // Second read must hit inner again because cache was evicted.
         await sut.GetAllAsync(CancellationToken.None);
 
-        // Assert
-        await inner.Received(2).GetAllAsync(Arg.Any<CancellationToken>());
+        Assert.Equal(2, inner.GetAllCallCount);
     }
 
     [Fact]
     public async Task SaveChangesAsync_EvictsCache()
     {
-        var inner = Substitute.For<RecyclingFacilityRepository>(Substitute.For<EcoNexusDbContext>());
+        var inner = new FakeRecyclingFacilityRepository();
         var cache = new MemoryCache(new MemoryCacheOptions());
         var sut = new CachedRecyclingFacilityRepository(inner, cache);
-        var facilities = new List<RecyclingFacility>();
-
-        inner.GetAllAsync(Arg.Any<CancellationToken>()).Returns(facilities);
-        inner.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(1);
 
         await sut.GetAllAsync(CancellationToken.None);
         await sut.SaveChangesAsync(CancellationToken.None);
         await sut.GetAllAsync(CancellationToken.None);
 
-        await inner.Received(2).GetAllAsync(Arg.Any<CancellationToken>());
+        Assert.Equal(2, inner.GetAllCallCount);
     }
 
     [Fact]
     public async Task Remove_EvictsCache()
     {
-        var inner = Substitute.For<RecyclingFacilityRepository>(Substitute.For<EcoNexusDbContext>());
+        var inner = new FakeRecyclingFacilityRepository();
         var cache = new MemoryCache(new MemoryCacheOptions());
         var sut = new CachedRecyclingFacilityRepository(inner, cache);
-        var facilities = new List<RecyclingFacility>();
-
-        inner.GetAllAsync(Arg.Any<CancellationToken>()).Returns(facilities);
 
         await sut.GetAllAsync(CancellationToken.None);
-        sut.Remove(CreateStubFacility());
+        sut.Remove(FakeRecyclingFacilityRepository.Facility());
         await sut.GetAllAsync(CancellationToken.None);
 
-        await inner.Received(2).GetAllAsync(Arg.Any<CancellationToken>());
+        Assert.Equal(2, inner.GetAllCallCount);
     }
 
     [Fact]
     public async Task GetByIdAsync_AlwaysPassesThroughToInner()
     {
-        var inner = Substitute.For<RecyclingFacilityRepository>(Substitute.For<EcoNexusDbContext>());
+        var inner = new FakeRecyclingFacilityRepository();
         var cache = new MemoryCache(new MemoryCacheOptions());
         var sut = new CachedRecyclingFacilityRepository(inner, cache);
         var id = Guid.NewGuid();
 
-        inner.GetByIdAsync(id, Arg.Any<CancellationToken>()).Returns((RecyclingFacility?)null);
-
         await sut.GetByIdAsync(id, CancellationToken.None);
         await sut.GetByIdAsync(id, CancellationToken.None);
 
-        // Not cached — must hit inner both times.
-        await inner.Received(2).GetByIdAsync(id, Arg.Any<CancellationToken>());
+        Assert.Equal(2, inner.GetByIdCallCount);
     }
 
     [Fact]
     public async Task NameExistsAsync_AlwaysPassesThroughToInner()
     {
-        var inner = Substitute.For<RecyclingFacilityRepository>(Substitute.For<EcoNexusDbContext>());
+        var inner = new FakeRecyclingFacilityRepository();
         var cache = new MemoryCache(new MemoryCacheOptions());
         var sut = new CachedRecyclingFacilityRepository(inner, cache);
 
-        inner.NameExistsAsync("Test Facility", Arg.Any<CancellationToken>()).Returns(true);
-
         await sut.NameExistsAsync("Test Facility", CancellationToken.None);
         await sut.NameExistsAsync("Test Facility", CancellationToken.None);
 
-        await inner.Received(2).NameExistsAsync("Test Facility", Arg.Any<CancellationToken>());
+        Assert.Equal(2, inner.NameExistsCallCount);
     }
 
-    private static RecyclingFacility CreateStubFacility()
+    // ============================================================
+    // Fake — implements the interface directly, counts calls.
+    // The concrete repository is sealed, so we do not use it here.
+    // ============================================================
+
+    private sealed class FakeRecyclingFacilityRepository : IRecyclingFacilityRepository
     {
-        // We do not need a fully-populated facility for these tests —
-        // the mock never inspects the argument. But RecyclingFacility
-        // has a private constructor, so we go through its factory.
-        // If the factory requires parameters we don't have, we can
-        // swap this for whatever the factory needs.
-        return RecyclingFacility.Create(
-            name: "Stub Facility",
-            location: Location.Create(latitude: 12.9716, longitude: 77.5946),
-            dailyCapacity: Weight.FromKilograms(1000));
+        private readonly List<RecyclingFacility> _facilities = new();
+
+        public int GetAllCallCount { get; private set; }
+        public int GetByIdCallCount { get; private set; }
+        public int NameExistsCallCount { get; private set; }
+        public int AddCallCount { get; private set; }
+        public int SaveChangesCallCount { get; private set; }
+        public int RemoveCallCount { get; private set; }
+
+        public Task AddAsync(RecyclingFacility facility, CancellationToken cancellationToken = default)
+        {
+            AddCallCount++;
+            _facilities.Add(facility);
+            return Task.CompletedTask;
+        }
+
+        public Task<RecyclingFacility?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            GetByIdCallCount++;
+            return Task.FromResult<RecyclingFacility?>(null);
+        }
+
+        public Task<bool> NameExistsAsync(string name, CancellationToken cancellationToken = default)
+        {
+            NameExistsCallCount++;
+            return Task.FromResult(false);
+        }
+
+        public Task<IReadOnlyList<RecyclingFacility>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            GetAllCallCount++;
+            return Task.FromResult<IReadOnlyList<RecyclingFacility>>(_facilities.ToList());
+        }
+
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            SaveChangesCallCount++;
+            return Task.FromResult(1);
+        }
+
+        public void Remove(RecyclingFacility facility)
+        {
+            RemoveCallCount++;
+            _facilities.Remove(facility);
+        }
+
+        /// <summary>Returns a real RecyclingFacility for use in write-path tests.</summary>
+        public static RecyclingFacility Facility()
+            => RecyclingFacility.Create(
+                "Stub Facility",
+                EcoNexus.Domain.ValueObjects.Location.Create(12.9716, 77.5946),
+                EcoNexus.Domain.ValueObjects.Weight.FromKilograms(1000));
     }
 }
