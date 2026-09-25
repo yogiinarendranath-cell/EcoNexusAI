@@ -1,6 +1,7 @@
 ﻿using EcoNexus.Domain.Abstractions;
 using EcoNexus.Domain.DomainEvents;
 using EcoNexus.Domain.Enums;
+using EcoNexus.Domain.ValueObjects;
 
 namespace EcoNexus.Domain.Entities;
 
@@ -12,6 +13,7 @@ namespace EcoNexus.Domain.Entities;
 public sealed class CitizenProfile : AggregateRoot
 {
     private readonly List<GreenPointTransaction> _transactions = new();
+    private readonly List<WasteClassification> _classifications = new();
 
     public Guid UserId { get; private set; }
     public string DisplayName { get; private set; }
@@ -25,6 +27,9 @@ public sealed class CitizenProfile : AggregateRoot
 
     /// <summary>Immutable ledger of all point movements for this citizen.</summary>
     public IReadOnlyCollection<GreenPointTransaction> Transactions => _transactions.AsReadOnly();
+
+    /// <summary>All waste-classification events requested by this citizen, newest first.</summary>
+    public IReadOnlyCollection<WasteClassification> Classifications => _classifications.AsReadOnly();
 
     /// <summary>Derived balance. Never stored.</summary>
     public int GreenPointsBalance => _transactions.Sum(t => t.SignedDelta);
@@ -217,6 +222,29 @@ public sealed class CitizenProfile : AggregateRoot
             occurredAt));
 
         return tx;
+    }
+
+    /// <summary>
+    /// Records a waste-classification event. No rate limit on the domain
+    /// side — the API layer enforces per-user throttling.
+    /// </summary>
+    public WasteClassification RecordClassification(
+        WasteClassificationResult result,
+        string imageReference,
+        string providerName,
+        DateTimeOffset classifiedAt)
+    {
+        var classification = new WasteClassification(
+            Id,
+            result,
+            imageReference,
+            providerName,
+            classifiedAt);
+
+        _classifications.Add(classification);
+        LastUpdatedAt = classifiedAt;
+
+        return classification;
     }
 
     private void AdvanceStreak(DateOnly today)
