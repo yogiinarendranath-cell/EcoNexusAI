@@ -25,7 +25,7 @@ export default function LoginPage() {
         accessToken: result.accessToken,
         refreshToken: result.refreshToken,
       });
-      navigate('/stations');
+      navigate('/app');
     } catch (err) {
       // Distinguish "wrong credentials" from "network / server error".
       if (err instanceof AxiosError && err.response?.status === 401) {
