@@ -31,6 +31,13 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
     <!-- Resilience for outbound HTTP (Polly v8 integration) -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
+    <!-- Observability: OpenTelemetry + Prometheus exporter -->
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.19.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.19.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.19.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.19.1-beta.1" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.19.1-beta.1" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.12" />
     <!-- Testing -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />

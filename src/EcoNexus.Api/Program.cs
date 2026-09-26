@@ -2,6 +2,7 @@
 using EcoNexus.Infrastructure.Realtime;
 using EcoNexus.Api.Middleware;
 using EcoNexus.Api.Extensions;
+using EcoNexus.Api.HealthChecks;
 using EcoNexus.Application;
 using EcoNexus.Application.Abstractions.Identity;
 using EcoNexus.Infrastructure;
@@ -214,6 +215,11 @@ builder.Services.AddCors(options =>
 // ============================================================
 builder.Services.AddEcoNexusRateLimiting();
 
+// ============================================================
+// Health checks (liveness / readiness)
+// ============================================================
+builder.Services.AddEcoNexusHealthChecks();
+
 var app = builder.Build();
 
 // ============================================================
@@ -250,6 +256,9 @@ app.UseAuthorization();
 app.UseOutputCache();
 
 app.MapControllers();
+
+// Health endpoints
+app.MapEcoNexusHealthChecks();
 
 // SignalR hub — real-time station updates
 app.MapHub<OperationsHub>("/hubs/operations");
