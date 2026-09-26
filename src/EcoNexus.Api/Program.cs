@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
+using Serilog.Enrichers.Span;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,11 +32,8 @@ builder.Host.UseSerilog((context, services, configuration) =>
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Console()
-        .WriteTo.File(
-            path: "logs/econexus-api-.log",
-            rollingInterval: RollingInterval.Day,
-            retainedFileCountLimit: 30);
+        .Enrich.WithSpan()
+        .Enrich.WithProperty("service", "EcoNexus.Api");
 });
 
 // ============================================================
@@ -244,7 +242,8 @@ builder.Services
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
         .AddRuntimeInstrumentation()
-        .AddMeter(EcoNexusMeters.BusinessMeterName));
+        .AddMeter(EcoNexusMeters.BusinessMeterName)
+        .AddPrometheusExporter());
 
 var app = builder.Build();
 
@@ -257,6 +256,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwagger();
+
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "EcoNexus AI API v1");
@@ -285,6 +285,13 @@ app.MapControllers();
 
 // Health endpoints
 app.MapEcoNexusHealthChecks();
+
+// Prometheus metrics scrape endpoint.
+// Available in all environments so scrapers inside the cluster
+// (Prometheus, OTel Collector, Grafana Agent) can reach it.
+// In production this must NOT be exposed on the public ingress —
+// firewall it to internal traffic only.
+app.MapPrometheusScrapingEndpoint();
 
 // SignalR hub — real-time station updates
 app.MapHub<OperationsHub>("/hubs/operations");
