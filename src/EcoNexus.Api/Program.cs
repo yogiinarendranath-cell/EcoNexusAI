@@ -3,6 +3,10 @@ using EcoNexus.Infrastructure.Realtime;
 using EcoNexus.Api.Middleware;
 using EcoNexus.Api.Extensions;
 using EcoNexus.Api.HealthChecks;
+using EcoNexus.Infrastructure.Observability;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using EcoNexus.Application;
 using EcoNexus.Application.Abstractions.Identity;
 using EcoNexus.Infrastructure;
@@ -219,6 +223,28 @@ builder.Services.AddEcoNexusRateLimiting();
 // Health checks (liveness / readiness)
 // ============================================================
 builder.Services.AddEcoNexusHealthChecks();
+
+// ============================================================
+// OpenTelemetry — tracing + metrics
+//
+// Auto-instruments: incoming HTTP, outgoing HTTP (Ollama),
+// EF Core queries, and .NET runtime (GC, thread pool).
+// Custom MediatR and business sources are added in later tasks.
+// ============================================================
+const string ServiceName = "EcoNexus.Api";
+
+builder.Services
+    .AddOpenTelemetry()
+    .ConfigureResource(r => r.AddService(ServiceName))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddEntityFrameworkCoreInstrumentation())
+    .WithMetrics(metrics => metrics
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddRuntimeInstrumentation()
+        .AddMeter(EcoNexusMeters.BusinessMeterName));
 
 var app = builder.Build();
 

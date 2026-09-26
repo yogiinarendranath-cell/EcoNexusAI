@@ -10,6 +10,7 @@ using EcoNexus.Infrastructure.Persistence.Repositories;
 using EcoNexus.Infrastructure.Realtime;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using EcoNexus.Infrastructure.Observability;
 
 namespace EcoNexus.Infrastructure;
 
@@ -41,6 +42,10 @@ public static class DependencyInjection
         services.AddScoped<IUserDirectory, UserDirectory>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddSingleton<IOperationsNotifier, SignalROperationsNotifier>();
+
+        // ---- Observability ----
+        // Business metrics emitted from domain event handlers.
+        services.AddSingleton<EcoNexusMeters>();
 
         // ---- AI waste classification ----
         // Binds the "AI" config section, then picks the provider.
@@ -100,6 +105,14 @@ public static class DependencyInjection
         {
             services.AddScoped<IAssistantLlm, MockAssistantLlm>();
         }
+
+
+        // ---- Domain event handlers (Infrastructure) ----
+        // MediatR's registration in Application scans only that
+        // assembly. Add Infrastructure so observability handlers
+        // here receive domain events.
+        services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
         return services;
     }
