@@ -43,6 +43,16 @@ public interface IWasteStationRepository
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Loads a station together with its readings recorded at or after <paramref name="since"/>.
+    /// Used by the fill-level forecaster, which needs the recent reading window.
+    /// Returns null if no station with that id exists.
+    /// </summary>
+    Task<WasteStation?> GetWithReadingsAsync(
+        Guid id,
+        DateTimeOffset since,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Flushes tracked changes to the database.
     /// MUST translate EF Core's DbUpdateConcurrencyException into
     /// EcoNexus.Application.Common.Exceptions.ConcurrencyConflictException.

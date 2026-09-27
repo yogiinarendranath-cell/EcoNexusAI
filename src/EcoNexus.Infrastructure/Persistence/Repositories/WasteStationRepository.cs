@@ -27,6 +27,20 @@ internal sealed class WasteStationRepository : IWasteStationRepository
         => _context.WasteStations
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
 
+    public Task<WasteStation?> GetWithReadingsAsync(
+        Guid id,
+        DateTimeOffset since,
+        CancellationToken cancellationToken = default)
+    {
+        // Filtered include: only load readings recorded at or after "since".
+        // AsSplitQuery avoids a cartesian explosion when the aggregate has
+        // multiple included collections (currently just Readings).
+        return _context.WasteStations
+            .AsSplitQuery()
+            .Include(s => s.Readings.Where(r => r.RecordedAt >= since))
+            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+    }
+
     public Task<bool> CodeExistsAsync(StationCode code, CancellationToken cancellationToken = default)
         => _context.WasteStations
             .AnyAsync(s => s.Code == code, cancellationToken);
@@ -98,15 +112,6 @@ internal sealed class WasteStationRepository : IWasteStationRepository
         }
         catch (DbUpdateConcurrencyException ex)
         {
-            // Genuine concurrency conflict: EF expected to affect N rows on a
-            // Modified or Deleted entity and affected fewer. Surface that as a
-            // domain-meaningful exception the Application layer can react to.
-            //
-            // False concurrency conflict: EF classified an Added entity as
-            // Modified (e.g. because its client-assigned Id was non-empty),
-            // issued UPDATE ... WHERE Id = <new>, matched 0 rows, and threw.
-            // That is a model configuration bug, not a concurrency condition.
-            // Rethrow as-is so the failure is loud instead of silently wrapped.
             var hadExpectedModificationOrDeletion = ex.Entries.Any(e =>
                 e.State == EntityState.Modified || e.State == EntityState.Deleted);
 
@@ -126,3 +131,4 @@ internal sealed class WasteStationRepository : IWasteStationRepository
         _context.WasteStations.Remove(station);
     }
 }
+

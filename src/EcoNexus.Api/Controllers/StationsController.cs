@@ -1,4 +1,5 @@
 ﻿using EcoNexus.Application.Features.Stations.CreateStation;
+using EcoNexus.Application.Features.Stations.ForecastStationFillLevel;
 using EcoNexus.Application.Features.Stations.DeleteStation;
 using EcoNexus.Application.Features.Stations.UpdateStation;
 using EcoNexus.Application.Features.Stations.GetStationById;
@@ -52,6 +53,45 @@ public sealed class StationsController : ControllerBase
         }
 
         return Ok(station);
+    }
+
+    /// <summary>Forecast when a waste station will reach 100% fill.</summary>
+    /// <remarks>
+    /// Uses linear regression on the station's recent fill-level readings.
+    /// Returns InsufficientData when there are fewer than 5 readings in the window
+    /// or when the fill level is flat/declining.
+    /// </remarks>
+    [HttpGet("{id:guid}/forecast")]
+    [EnableRateLimiting("reads")]
+    [ProducesResponseType(typeof(ForecastStationFillLevelResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Forecast(
+        Guid id,
+        [FromQuery] int windowHours = 24,
+        CancellationToken cancellationToken = default)
+    {
+        var station = await _sender.Send(new GetStationByIdQuery(id), cancellationToken);
+        if (station is null)
+        {
+            return NotFound();
+        }
+
+        var forecast = await _sender.Send(
+            new ForecastStationFillLevelQuery(id, windowHours),
+            cancellationToken);
+
+        var response = new ForecastStationFillLevelResponse(
+            StationId: forecast.StationId,
+            CurrentFillPercent: forecast.CurrentFillPercent,
+            FillRatePercentPerHour: forecast.FillRatePercentPerHour,
+            PredictedOverflowAt: forecast.PredictedOverflowAt,
+            HoursUntilOverflow: forecast.HoursUntilOverflow,
+            Confidence: forecast.Confidence,
+            Method: forecast.Method,
+            SampleSize: forecast.SampleSize,
+            IsOverflowPredicted: forecast.IsOverflowPredicted);
+
+        return Ok(response);
     }
 
     /// <summary>List stations with pagination and filters.</summary>
