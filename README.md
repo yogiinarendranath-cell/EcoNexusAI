@@ -4,8 +4,28 @@
 
 [![CI](https://github.com/yogiinarendranath-cell/EcoNexusAI/actions/workflows/ci.yml/badge.svg)](https://github.com/yogiinarendranath-cell/EcoNexusAI/actions/workflows/ci.yml)
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com)
-[![Tests](https://img.shields.io/badge/tests-258%20passing-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/tests-356%20passing-brightgreen)](#testing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
+
+---
+
+## Visual Demo
+
+### Fill-Level Forecast Chart
+
+![Fill-level forecast chart for station ST-001](docs/screenshots/forecast-chart.png)
+
+**What you are looking at:** the station-detail page for `ST-001`. The
+green line shows actual fill-level readings from the IoT sensors; the
+blue dashed line is the linear-regression forecast projected forward;
+the red `Overflow` marker shows the predicted overflow time; and the
+amber line at 90% is the critical-fill threshold. The header reports
+`Predicted overflow in X min` along with a confidence score and the
+number of samples used.
+
+This feature is served by `GET /api/v1/stations/{id}/forecast` and backed
+by the pure domain service `FillLevelForecaster` (Ordinary Least Squares
+on `(hours, fillPercent)`, confidence from R² and sample size).
 
 ---
 
@@ -300,9 +320,9 @@ Full OpenAPI spec at `/swagger` when running locally.
 - Real-time updates (SignalR)
 - IoT Station Simulator
 - Observability (OpenTelemetry + Serilog + Prometheus)
+- Predictive Fill-Level Forecasting (linear regression + UI chart)
 
 **In Progress:**
-- Predictive Fill-Level Forecasting
 - CI/CD pipeline + Azure deployment
 - Application-layer unit-test coverage expansion
 

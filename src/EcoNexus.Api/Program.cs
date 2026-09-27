@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
+using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Enrichers.Span;
 
@@ -148,7 +148,7 @@ builder.Services.AddSignalR();
 builder.Services.AddHostedService<RoleSeeder>();
 
 // ============================================================
-// Controllers + Swagger
+// Controllers
 // ============================================================
 // ============================================================
 // API versioning — URL-segment based (v1, v2, ...).
@@ -197,32 +197,6 @@ builder.Services.AddOutputCache(options =>
         policy.Expire(TimeSpan.FromSeconds(60));
     });
 });
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "EcoNexus AI API",
-        Version = "v1",
-        Description = "AI-Powered Smart Waste & Recycling Network"
-    });
-
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Paste your JWT access token here. Swagger will send it as `Authorization: Bearer {token}`."
-    });
-
-    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-    {
-        [new OpenApiSecuritySchemeReference("Bearer", document, null)] = new List<string>()
-    });
-});
-
 builder.Services.AddOpenApi();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -320,13 +294,8 @@ app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.UseSwagger();
+    app.MapScalarApiReference();
 
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "EcoNexus AI API v1");
-        options.RoutePrefix = "swagger";
-    });
 }
 
 app.UseHttpsRedirection();
