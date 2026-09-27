@@ -42,6 +42,7 @@ public sealed class EcoNexusApiFactory : WebApplicationFactory<Program>, IAsyncL
         builder.UseSetting("Jwt:Audience", "EcoNexus.Client.Tests");
         builder.UseSetting("Jwt:SecretKey", "IntegrationTest-Only-Secret-Key-That-Is-Long-Enough-For-HmacSha256");
         builder.UseSetting("Jwt:AccessTokenMinutes", "15");
+        builder.UseSetting("Cors:AllowedOrigins:0", "http://localhost:5173");
         builder.UseSetting("Jwt:RefreshTokenDays", "7");
 
         builder.ConfigureServices(services =>

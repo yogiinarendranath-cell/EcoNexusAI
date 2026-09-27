@@ -1,4 +1,5 @@
-﻿using EcoNexus.Application.Features.CollectionJobs.GetJobById;
+﻿using Asp.Versioning;
+using EcoNexus.Application.Features.CollectionJobs.GetJobById;
 using EcoNexus.Application.Features.CollectionJobs.ListJobs;
 using EcoNexus.Application.Features.CollectionJobs.PreviewRoute;
 using EcoNexus.Application.Features.CollectionJobs.ScheduleJob;
@@ -9,7 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace EcoNexus.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/collection-jobs")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/collection-jobs")]
 public sealed class CollectionJobsController : ControllerBase
 {
     private readonly IMediator _mediator;

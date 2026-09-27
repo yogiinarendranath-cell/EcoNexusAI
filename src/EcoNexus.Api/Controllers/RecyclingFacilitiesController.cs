@@ -1,4 +1,5 @@
-﻿using EcoNexus.Application.Features.Recycling.AdvanceIntake;
+﻿using Asp.Versioning;
+using EcoNexus.Application.Features.Recycling.AdvanceIntake;
 using EcoNexus.Application.Features.Recycling.CreateFacility;
 using EcoNexus.Application.Features.Recycling.GetFacilityById;
 using EcoNexus.Application.Features.Recycling.ListFacilities;
@@ -10,7 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace EcoNexus.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/recycling-facilities")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/recycling-facilities")]
 public sealed class RecyclingFacilitiesController : ControllerBase
 {
     private readonly ISender _sender;

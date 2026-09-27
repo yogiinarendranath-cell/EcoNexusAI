@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using Asp.Versioning;
+using System.Security.Claims;
 using EcoNexus.Application.Features.Operations.Assistant;
 using EcoNexus.Contracts.Operations;
 using MediatR;
@@ -14,7 +15,8 @@ namespace EcoNexus.Api.Controllers;
 /// facing data.
 /// </summary>
 [ApiController]
-[Route("api/v1/operations/assistant")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/operations/assistant")]
 [Authorize(Roles = "SuperAdmin,CityAdmin,OperationsManager")]
 public sealed class OperationsAssistantController : ControllerBase
 {

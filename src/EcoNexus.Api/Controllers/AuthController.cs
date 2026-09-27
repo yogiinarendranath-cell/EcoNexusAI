@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Asp.Versioning;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using EcoNexus.Application.Abstractions.Identity;
 using EcoNexus.Contracts.Auth;
@@ -15,7 +16,8 @@ namespace EcoNexus.Api.Controllers;
 /// Authentication endpoints: register, login, refresh, logout, and me.
 /// </summary>
 [ApiController]
-[Route("api/v1/auth")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/auth")]
 [Produces("application/json")]
 public sealed class AuthController : ControllerBase
 {

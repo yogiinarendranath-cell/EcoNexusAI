@@ -1,4 +1,5 @@
-﻿using EcoNexus.Application.Features.Stations.CreateStation;
+﻿using Asp.Versioning;
+using EcoNexus.Application.Features.Stations.CreateStation;
 using EcoNexus.Application.Features.Stations.ForecastStationFillLevel;
 using EcoNexus.Application.Features.Stations.ListStationReadings;
 using EcoNexus.Application.Features.Stations.DeleteStation;
@@ -16,7 +17,8 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace EcoNexus.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public sealed class StationsController : ControllerBase
 {
     private readonly ISender _sender;

@@ -3,6 +3,8 @@ using EcoNexus.Infrastructure.Realtime;
 using EcoNexus.Api.Middleware;
 using EcoNexus.Api.Extensions;
 using EcoNexus.Api.HealthChecks;
+using EcoNexus.Api.Options;
+using Asp.Versioning;
 using EcoNexus.Infrastructure.Observability;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -68,6 +70,7 @@ builder.Services.AddDataProtection();
 builder.Services
     .AddOptions<JwtSettings>()
     .Bind(builder.Configuration.GetSection(JwtSettings.SectionName))
+    .ValidateDataAnnotations()
     .ValidateOnStart();
 
 // ============================================================
@@ -147,6 +150,34 @@ builder.Services.AddHostedService<RoleSeeder>();
 // ============================================================
 // Controllers + Swagger
 // ============================================================
+// ============================================================
+// API versioning — URL-segment based (v1, v2, ...).
+//
+// The version segment is REQUIRED by the route template:
+//   [Route("api/v{version:apiVersion}/...")]
+// So /api/v1/stations is canonical; /api/stations returns 404.
+//
+// AssumeDefaultVersionWhenUnspecified is kept true so any future
+// controller with an unversioned template (e.g. HealthController)
+// will still resolve to v1.0.
+//
+// Supported versions are reported via the "api-supported-versions"
+// response header.
+// ============================================================
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ReportApiVersions = true;
+        options.ApiVersionReader = new UrlSegmentApiVersionReader();
+    })
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'V";
+        options.SubstituteApiVersionInUrl = true;
+    });
+
 builder.Services.AddControllers();
 
 // ============================================================
@@ -197,19 +228,42 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 // ============================================================
-// CORS — allow the Vite dev frontend during development
+// CORS — origins are configuration-driven (see "Cors" section in appsettings).
+// Development origins live in appsettings.Development.json.
+// Production origins must be supplied via environment variables
+// (e.g. Cors__AllowedOrigins__0=https://econexus.example.com).
 // ============================================================
-const string DevCorsPolicy = "EcoNexusDev";
+const string CorsPolicy = "EcoNexusCors";
+
+builder.Services
+    .AddOptions<CorsOptions>()
+    .Bind(builder.Configuration.GetSection(CorsOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+var corsOptions = builder.Configuration
+    .GetSection(CorsOptions.SectionName)
+    .Get<CorsOptions>() ?? new CorsOptions();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(DevCorsPolicy, policy =>
+    options.AddPolicy(CorsPolicy, policy =>
     {
-        policy
-            .WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+        if (corsOptions.AllowAnyOrigin)
+        {
+            policy.AllowAnyOrigin();
+        }
+        else
+        {
+            policy.WithOrigins(corsOptions.AllowedOrigins);
+        }
+
+        policy.AllowAnyHeader().AllowAnyMethod();
+
+        if (corsOptions.AllowCredentials && !corsOptions.AllowAnyOrigin)
+        {
+            policy.AllowCredentials();
+        }
     });
 });
 // ============================================================
@@ -252,6 +306,17 @@ var app = builder.Build();
 // ============================================================
 app.UseExceptionHandler();
 
+    // HSTS: force HTTPS-only for one year. Enabled outside Development so we
+    // don't lock localhost into HTTPS during day-to-day work.
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHsts();
+    }
+
+    // Security headers on every response (success, error, 404). Applied early
+    // so even short-circuited requests carry them.
+    app.UseSecurityHeaders();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -268,7 +333,7 @@ app.UseHttpsRedirection();
 
 // CORS must sit before auth so preflight OPTIONS requests are answered
 // without hitting the authentication middleware.
-app.UseCors(DevCorsPolicy);
+app.UseCors(CorsPolicy);
 
 // Rate limiter runs before authentication so anonymous endpoints
 // (login, register) are also protected from brute-force attempts.

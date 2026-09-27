@@ -1,4 +1,5 @@
-﻿using EcoNexus.Application.Features.CollectionVehicles.CreateVehicle;
+﻿using Asp.Versioning;
+using EcoNexus.Application.Features.CollectionVehicles.CreateVehicle;
 using EcoNexus.Application.Features.CollectionVehicles.ListVehicles;
 using EcoNexus.Contracts.CollectionVehicles;
 using MediatR;
@@ -7,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace EcoNexus.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/collection-vehicles")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/collection-vehicles")]
 public sealed class CollectionVehiclesController : ControllerBase
 {
     private readonly IMediator _mediator;

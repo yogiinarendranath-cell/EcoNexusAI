@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Asp.Versioning;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using EcoNexus.Application.Features.Citizen.FileReport;
 using EcoNexus.Application.Features.Citizen.ClassifyWaste;
@@ -19,7 +20,8 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace EcoNexus.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/citizen")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/citizen")]
 [Authorize]
 public sealed class CitizenController : ControllerBase
 {
