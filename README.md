@@ -1,10 +1,10 @@
-# EcoNexus AI
+﻿# EcoNexus AI
 
-> **AI-Powered Smart Waste & Recycling Network** — a cloud-native platform that connects IoT-instrumented waste stations, predictive analytics, intelligent collection routing, citizen engagement, and recycling operations through an event-driven architecture.
+> **AI-Powered Smart Waste & Recycling Network** â€” a cloud-native platform that connects IoT-instrumented waste stations, predictive analytics, intelligent collection routing, citizen engagement, and recycling operations through an event-driven architecture.
 
 [![CI](https://github.com/yogiinarendranath-cell/EcoNexusAI/actions/workflows/ci.yml/badge.svg)](https://github.com/yogiinarendranath-cell/EcoNexusAI/actions/workflows/ci.yml)
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com)
-[![Tests](https://img.shields.io/badge/tests-232%20passing-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/tests-258%20passing-brightgreen)](#testing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 
 ---
@@ -28,14 +28,14 @@
 
 EcoNexus AI is a full-stack waste-management platform for smart cities. It provides:
 
-- **Smart Waste Stations** — IoT-instrumented bins that report fill levels in real time
-- **AI Waste Classification** — Citizens upload a photo; the platform classifies the waste type and provides disposal guidance
-- **Predictive Fill-Level Forecasting** — Forecasts when a station will overflow based on recent sensor readings
-- **Route Optimization** — Prioritized collection routes based on urgency, distance, and vehicle capacity
-- **Recycling Facility Workflow** — Intake recording, processing stage tracking, and sustainability metrics
-- **Citizen Engagement** — Green points ledger, reward redemption, station visits, and report filing
-- **AI Operations Assistant** — Natural-language queries against live operational data
-- **Real-Time Dashboard** — SignalR pushes station fill-level changes to connected operators
+- **Smart Waste Stations** â€” IoT-instrumented bins that report fill levels in real time
+- **AI Waste Classification** â€” Citizens upload a photo; the platform classifies the waste type and provides disposal guidance
+- **Predictive Fill-Level Forecasting** â€” Forecasts when a station will overflow based on recent sensor readings
+- **Route Optimization** â€” Prioritized collection routes based on urgency, distance, and vehicle capacity
+- **Recycling Facility Workflow** â€” Intake recording, processing stage tracking, and sustainability metrics
+- **Citizen Engagement** â€” Green points ledger, reward redemption, station visits, and report filing
+- **AI Operations Assistant** â€” Natural-language queries against live operational data
+- **Real-Time Dashboard** â€” SignalR pushes station fill-level changes to connected operators
 
 ---
 
@@ -195,36 +195,36 @@ Frontend at `http://localhost:5173`.
 
 ```
 EcoNexusAI/
-├── src/
-│   ├── EcoNexus.Api/            HTTP layer, controllers, middleware, composition root
-│   ├── EcoNexus.Application/    CQRS features, MediatR handlers, validators
-│   ├── EcoNexus.Contracts/      DTOs shared with clients
-│   ├── EcoNexus.Domain/         Entities, value objects, events, domain services
-│   ├── EcoNexus.Infrastructure/ EF Core, Identity, SignalR, AI providers, observability
-│   └── EcoNexus.Worker/         IoT simulator + background workers
-├── tests/
-│   ├── EcoNexus.ArchitectureTests/  Dependency rule enforcement (NetArchTest)
-│   ├── EcoNexus.IntegrationTests/   End-to-end HTTP tests (WebApplicationFactory)
-│   └── EcoNexus.UnitTests/          Domain + application unit tests
-├── web/                         React + Vite + TypeScript frontend
-├── docs/                        PRD, ADRs, architecture, changelog, backlog
-├── docker/                      Dockerfiles for API and Worker
-├── docker-compose.yml           Local dev stack
-├── Directory.Build.props        Shared MSBuild settings
-└── Directory.Packages.props     Central NuGet version management
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ EcoNexus.Api/            HTTP layer, controllers, middleware, composition root
+â”‚   â”œâ”€â”€ EcoNexus.Application/    CQRS features, MediatR handlers, validators
+â”‚   â”œâ”€â”€ EcoNexus.Contracts/      DTOs shared with clients
+â”‚   â”œâ”€â”€ EcoNexus.Domain/         Entities, value objects, events, domain services
+â”‚   â”œâ”€â”€ EcoNexus.Infrastructure/ EF Core, Identity, SignalR, AI providers, observability
+â”‚   â””â”€â”€ EcoNexus.Worker/         IoT simulator + background workers
+â”œâ”€â”€ tests/
+â”‚   â”œâ”€â”€ EcoNexus.ArchitectureTests/  Dependency rule enforcement (NetArchTest)
+â”‚   â”œâ”€â”€ EcoNexus.IntegrationTests/   End-to-end HTTP tests (WebApplicationFactory)
+â”‚   â””â”€â”€ EcoNexus.UnitTests/          Domain + application unit tests
+â”œâ”€â”€ web/                         React + Vite + TypeScript frontend
+â”œâ”€â”€ docs/                        PRD, ADRs, architecture, changelog, backlog
+â”œâ”€â”€ docker/                      Dockerfiles for API and Worker
+â”œâ”€â”€ docker-compose.yml           Local dev stack
+â”œâ”€â”€ Directory.Build.props        Shared MSBuild settings
+â””â”€â”€ Directory.Packages.props     Central NuGet version management
 ```
 
 ---
 
 ## Testing
 
-**232 tests, all green:**
+**258 tests, all green:**
 
 | Project | Count | Scope |
 |---|---|---|
 | EcoNexus.ArchitectureTests | 8 | Layer dependencies, project refs |
-| EcoNexus.UnitTests | 179 | Domain aggregates, value objects, handlers, services |
-| EcoNexus.IntegrationTests | 45 | HTTP endpoints, auth flows, real-time, caching, rate limiting |
+| EcoNexus.UnitTests | 194 | Domain aggregates, value objects, handlers, services |
+| EcoNexus.IntegrationTests | 56 | HTTP endpoints, auth flows, real-time, caching, rate limiting |
 
 Run all tests:
 
@@ -240,20 +240,20 @@ dotnet test tests/EcoNexus.UnitTests --collect:"XPlat Code Coverage"
 
 Coverage output is a Cobertura XML under `tests/EcoNexus.UnitTests/TestResults/`.
 
-**Architecture rules enforced in CI** — if you break the dependency direction, the build fails.
+**Architecture rules enforced in CI** â€” if you break the dependency direction, the build fails.
 
 ---
 
 ## Observability
 
-- **Structured logging** — Serilog with trace-ID enrichment
-- **Distributed tracing** — OpenTelemetry (HTTP, EF Core, outbound HTTP)
-- **Metrics** — exposed at `/metrics` in Prometheus format
-- **Custom business meters** — `econexus_station_reading_recorded`, etc.
-- **Health checks** — `/health/live` (liveness), `/health/ready` (readiness)
-- **Correlation** — every log line includes `trace:{TraceId} span:{SpanId}`
+- **Structured logging** â€” Serilog with trace-ID enrichment
+- **Distributed tracing** â€” OpenTelemetry (HTTP, EF Core, outbound HTTP)
+- **Metrics** â€” exposed at `/metrics` in Prometheus format
+- **Custom business meters** â€” `econexus_station_reading_recorded`, etc.
+- **Health checks** â€” `/health/live` (liveness), `/health/ready` (readiness)
+- **Correlation** â€” every log line includes `trace:{TraceId} span:{SpanId}`
 
-> **Production note:** The `/metrics` endpoint must be firewalled to internal traffic only — see `Program.cs`.
+> **Production note:** The `/metrics` endpoint must be firewalled to internal traffic only â€” see `Program.cs`.
 
 ---
 
@@ -264,7 +264,7 @@ Versioned via route prefix (`/api/v1/...`):
 | Area | Endpoints |
 |---|---|
 | Auth | `POST /register`, `POST /login`, `POST /refresh`, `POST /logout`, `GET /me` |
-| Stations | `GET`, `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}`, `POST /{id}/readings` |
+| Stations | `GET`, `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}`, `POST /{id}/readings`, `GET /{id}/readings`, `GET /{id}/forecast` |
 | Collection Jobs | `GET`, `GET /{id}`, `POST /preview-route`, `POST` |
 | Collection Vehicles | `GET`, `POST` |
 | Recycling Facilities | `GET`, `GET /{id}`, `POST`, `POST /{id}/intakes`, `POST /{id}/intakes/{intakeId}/advance` |
@@ -317,6 +317,6 @@ See [docs/backlog.md](docs/backlog.md) for the current prioritized queue.
 
 ## Author
 
-**Narendra N** — [@yogiinarendranath-cell](https://github.com/yogiinarendranath-cell)
+**Narendra N** â€” [@yogiinarendranath-cell](https://github.com/yogiinarendranath-cell)
 
 Built as a portfolio project demonstrating production-grade .NET architecture.

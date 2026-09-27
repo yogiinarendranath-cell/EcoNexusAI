@@ -1,5 +1,6 @@
 ﻿using EcoNexus.Application.Features.Stations.CreateStation;
 using EcoNexus.Application.Features.Stations.ForecastStationFillLevel;
+using EcoNexus.Application.Features.Stations.ListStationReadings;
 using EcoNexus.Application.Features.Stations.DeleteStation;
 using EcoNexus.Application.Features.Stations.UpdateStation;
 using EcoNexus.Application.Features.Stations.GetStationById;
@@ -53,6 +54,30 @@ public sealed class StationsController : ControllerBase
         }
 
         return Ok(station);
+    }
+
+    /// <summary>List recent fill-level readings for a station.</summary>
+    [HttpGet("{id:guid}/readings")]
+    [EnableRateLimiting("reads")]
+    [ProducesResponseType(typeof(IReadOnlyList<StationReadingResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetReadings(
+        Guid id,
+        [FromQuery] int windowHours = 24,
+        [FromQuery] int limit = 100,
+        CancellationToken cancellationToken = default)
+    {
+        var station = await _sender.Send(new GetStationByIdQuery(id), cancellationToken);
+        if (station is null)
+        {
+            return NotFound();
+        }
+
+        var readings = await _sender.Send(
+            new ListStationReadingsQuery(id, windowHours, limit),
+            cancellationToken);
+
+        return Ok(readings);
     }
 
     /// <summary>Forecast when a waste station will reach 100% fill.</summary>

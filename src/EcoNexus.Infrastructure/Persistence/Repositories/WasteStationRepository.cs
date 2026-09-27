@@ -73,7 +73,7 @@ internal sealed class WasteStationRepository : IWasteStationRepository
 
         if (query.CriticalOnly)
         {
-            q = q.Where(s => s.CurrentFill.Percent >= FillLevel.CriticalThresholdPercent);
+            q = q.Where(s => s.CurrentFill >= FillLevel.FromPercent(FillLevel.CriticalThresholdPercent));
         }
 
         var total = await q.CountAsync(cancellationToken);
@@ -83,8 +83,8 @@ internal sealed class WasteStationRepository : IWasteStationRepository
         q = sortBy switch
         {
             "filllevel" => query.SortDesc
-                ? q.OrderByDescending(s => s.CurrentFill.Percent).ThenBy(s => s.Code)
-                : q.OrderBy(s => s.CurrentFill.Percent).ThenBy(s => s.Code),
+                ? q.OrderByDescending(s => s.CurrentFill).ThenBy(s => s.Code)
+                : q.OrderBy(s => s.CurrentFill).ThenBy(s => s.Code),
             "lastupdated" => query.SortDesc
                 ? q.OrderByDescending(s => s.LastUpdatedAt).ThenBy(s => s.Code)
                 : q.OrderBy(s => s.LastUpdatedAt).ThenBy(s => s.Code),

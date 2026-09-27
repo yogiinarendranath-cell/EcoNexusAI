@@ -4,6 +4,7 @@ import type {
   StationListQuery,
   StationListItem,
 } from '../../types/station';
+import type { Forecast, StationReading } from '../../types/forecast';
 
 /**
  * Fetches a page of stations from the API.
@@ -32,3 +33,49 @@ export async function fetchStations(
   const { data } = await apiClient.get<PagedResult<StationListItem>>(url);
   return data;
 }
+
+/**
+ * Fetches detailed metadata for one station.
+ * Backend: GET /api/v1/stations/{id}
+ */
+export async function fetchStationDetail(id: string): Promise<StationListItem> {
+    const { data } = await apiClient.get<StationListItem>(`/v1/stations/${id}`);
+    return data;
+}
+
+/**
+ * Fetches the most recent readings for one station, ordered ascending by time.
+ * Backend: GET /api/v1/stations/{id}/readings?windowHours=N&limit=M
+ */
+export async function fetchStationReadings(
+    id: string,
+    windowHours = 24,
+    limit = 200,
+): Promise<StationReading[]> {
+    const params = new URLSearchParams();
+    params.set("windowHours", String(windowHours));
+    params.set("limit", String(limit));
+
+    const { data } = await apiClient.get<StationReading[]>(
+        `/v1/stations/${id}/readings?${params.toString()}`,
+    );
+    return data;
+}
+
+/**
+ * Fetches the fill-level forecast for one station.
+ * Backend: GET /api/v1/stations/{id}/forecast?windowHours=N
+ */
+export async function fetchStationForecast(
+    id: string,
+    windowHours = 24,
+): Promise<Forecast> {
+    const params = new URLSearchParams();
+    params.set("windowHours", String(windowHours));
+
+    const { data } = await apiClient.get<Forecast>(
+        `/v1/stations/${id}/forecast?${params.toString()}`,
+    );
+    return data;
+}
+

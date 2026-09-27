@@ -1,5 +1,5 @@
 ﻿import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { fetchStations } from './stationsApi';
 import UserMenu from '../auth/UserMenu';
 import type { StationListItem, StationStatus } from '../../types/station';
@@ -100,6 +100,7 @@ function EmptyState() {
 }
 
 function StationsTable({ items }: { items: StationListItem[] }) {
+  const navigate = useNavigate();
   return (
     <div className="overflow-hidden rounded-xl border border-slate-800">
       <table className="w-full text-sm">
@@ -115,7 +116,11 @@ function StationsTable({ items }: { items: StationListItem[] }) {
         </thead>
         <tbody className="divide-y divide-slate-800">
           {items.map((s) => (
-            <tr key={s.id} className="hover:bg-slate-900/40 transition">
+            <tr
+              key={s.id}
+              onClick={() => navigate(`/stations/${s.id}`)}
+              className="hover:bg-slate-900/40 transition cursor-pointer"
+            >
               <td className="px-4 py-3 font-mono text-slate-100">{s.code}</td>
               <td className="px-4 py-3 text-slate-300">{s.primaryCategory}</td>
               <td className="px-4 py-3">

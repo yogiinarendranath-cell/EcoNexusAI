@@ -5,8 +5,10 @@ namespace EcoNexus.Domain.ValueObjects;
 /// <summary>
 /// The fill level of a waste station, expressed as a percentage in [0, 100].
 /// Values are stored to one decimal place to avoid floating-point noise.
+/// Implements <see cref="IComparable{T}"/> so EF Core can translate
+/// OrderBy / comparisons on the value-converted column.
 /// </summary>
-public sealed class FillLevel : ValueObject
+public sealed class FillLevel : ValueObject, IComparable<FillLevel>, IComparable
 {
     /// <summary>Threshold above which a station is considered critical.</summary>
     public const double CriticalThresholdPercent = 90.0;
@@ -45,5 +47,43 @@ public sealed class FillLevel : ValueObject
         yield return Percent;
     }
 
+    public int CompareTo(FillLevel? other)
+        => other is null ? 1 : Percent.CompareTo(other.Percent);
+
+    int IComparable.CompareTo(object? obj)
+    {
+        if (obj is null) return 1;
+        if (obj is not FillLevel other)
+        {
+            throw new ArgumentException($"Object must be of type {nameof(FillLevel)}.", nameof(obj));
+        }
+        return CompareTo(other);
+    }
+
+    public static bool operator <(FillLevel left, FillLevel right)
+        => left is not null && right is not null && left.Percent < right.Percent;
+
+    public static bool operator >(FillLevel left, FillLevel right)
+        => left is not null && right is not null && left.Percent > right.Percent;
+
+    public static bool operator <=(FillLevel left, FillLevel right)
+        => left is not null && right is not null && left.Percent <= right.Percent;
+
+    public static bool operator >=(FillLevel left, FillLevel right)
+        => left is not null && right is not null && left.Percent >= right.Percent;
+
+    public override bool Equals(object? obj)
+        => obj is FillLevel other && Percent.Equals(other.Percent);
+
+    public override int GetHashCode()
+        => Percent.GetHashCode();
+
+    public static bool operator ==(FillLevel left, FillLevel right)
+        => Equals(left, right);
+
+    public static bool operator !=(FillLevel left, FillLevel right)
+        => !Equals(left, right);
+
     public override string ToString() => $"{Percent}%";
 }
+
