@@ -11,6 +11,13 @@
 
 ## Visual Demo
 
+### App Demo
+
+<video src="docs/demos/app-demo.mp4" controls muted playsinline width="800"></video>
+
+*2-minute walkthrough: stations list → station detail with the forecast
+chart → back to the list. Recorded on 2026-09-28.*
+
 ### Fill-Level Forecast Chart
 
 ![Fill-level forecast chart for station ST-001](docs/screenshots/forecast-chart.png)
