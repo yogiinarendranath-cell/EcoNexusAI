@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\src\EcoNexus.Application\EcoNexus.Application.csproj" />
     <ProjectReference Include="..\..\src\EcoNexus.Contracts\EcoNexus.Contracts.csproj" />
     <ProjectReference Include="..\..\src\EcoNexus.Infrastructure\EcoNexus.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\EcoNexus.Api\EcoNexus.Api.csproj" />
   </ItemGroup>
 
 </Project>
