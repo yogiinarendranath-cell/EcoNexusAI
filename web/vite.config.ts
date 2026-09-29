@@ -10,6 +10,8 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    host: true,                            // listen on 0.0.0.0, not just localhost
+    allowedHosts: ['.trycloudflare.com'],  // or your named-tunnel hostname
     proxy: {
       // Forward any /api/* call to the .NET backend during dev.
       // This sidesteps browser CORS entirely (single origin from the browser's view)
