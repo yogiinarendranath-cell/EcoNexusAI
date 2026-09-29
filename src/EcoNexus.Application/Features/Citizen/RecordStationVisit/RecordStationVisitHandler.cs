@@ -44,7 +44,13 @@ internal sealed class RecordStationVisitHandler
                 $"Station '{request.Request.StationId}' was not found.");
         }
 
-        var occurredAt = DateTimeOffset.UtcNow;
+        // The business event is "citizen visited on date X". The transaction's
+        // OccurredAt must reflect VisitDate (not UtcNow), so dedup checks that
+        // compare OccurredAt.Date to the requested VisitDate work correctly and
+        // so the audit trail records the date the citizen actually visited.
+        var occurredAt = new DateTimeOffset(
+            request.Request.VisitDate.ToDateTime(TimeOnly.MinValue),
+            TimeSpan.Zero);
 
         EcoNexus.Domain.Entities.GreenPointTransaction tx;
         try
