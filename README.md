@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/yogiinarendranath-cell/EcoNexusAI/actions/workflows/ci.yml/badge.svg)](https://github.com/yogiinarendranath-cell/EcoNexusAI/actions/workflows/ci.yml)
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com)
-[![Tests](https://img.shields.io/badge/tests-356%20passing-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/tests-411%20passing-brightgreen)](#testing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 
 ---
@@ -196,7 +196,7 @@ dotnet run --project src/EcoNexus.Api
 ```
 
 - API: `https://localhost:7001`
-- Swagger UI: `https://localhost:7001/swagger`
+- Scalar API reference: `https://localhost:7001/scalar/v1`
 - Health: `https://localhost:7001/health/live`
 - Metrics: `https://localhost:7001/metrics`
 
@@ -245,12 +245,12 @@ EcoNexusAI/
 
 ## Testing
 
-**258 tests, all green:**
+**411 tests, all green:**
 
 | Project | Count | Scope |
 |---|---|---|
-| EcoNexus.ArchitectureTests | 8 | Layer dependencies, project refs |
-| EcoNexus.UnitTests | 194 | Domain aggregates, value objects, handlers, services |
+| EcoNexus.ArchitectureTests | 14 | Layer dependencies, project refs |
+| EcoNexus.UnitTests | 341 | Domain aggregates, value objects, handlers, services |
 | EcoNexus.IntegrationTests | 56 | HTTP endpoints, auth flows, real-time, caching, rate limiting |
 
 Run all tests:
@@ -300,7 +300,7 @@ Versioned via route prefix (`/api/v1/...`):
 | System | `GET /api/v1/ping`, `GET /health/live`, `GET /health/ready`, `GET /metrics` |
 | Real-Time | SignalR hub at `/hubs/operations` |
 
-Full OpenAPI spec at `/swagger` when running locally.
+Full OpenAPI spec at `/scalar/v1` when running locally.
 
 ---
 
