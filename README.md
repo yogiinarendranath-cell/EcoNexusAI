@@ -7,6 +7,16 @@
 [![Tests](https://img.shields.io/badge/tests-411%20passing-brightgreen)](#testing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 
+## Live Demo
+
+**Frontend:** https://guy-element-bathroom-marble.trycloudflare.com
+
+**API health:** https://guy-element-bathroom-marble.trycloudflare.com/api/v1/ping
+
+> ⚠️ Hosted locally behind a Cloudflare quick tunnel — the URL is live only while
+> the maintainer's machine is running the API, Vite dev server, and cloudflared.
+> See [Quickstart](#quickstart) to run the full stack locally.
+
 ---
 
 ## Visual Demo
