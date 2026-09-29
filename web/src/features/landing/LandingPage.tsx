@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import UserMenu from '../auth/UserMenu';
 
 export default function LandingPage() {
@@ -97,11 +97,7 @@ export default function LandingPage() {
           <StatusCard label="Critical Alerts" value="31" sublabel="Action required" tone="critical" />
         </div>
 
-        {/* Footer note */}
-        <div className="mt-16 text-xs text-slate-500">
-          Step 9.5c — Stations route wired. Live data fetch lives at /stations.
-        </div>
-      </main>
+              </main>
     </div>
   );
 }
