@@ -97,7 +97,7 @@ export default function LandingPage() {
           <StatusCard label="Critical Alerts" value="31" sublabel="Action required" tone="critical" />
         </div>
 
-              </main>
+      </main>
     </div>
   );
 }
