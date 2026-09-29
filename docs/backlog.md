@@ -41,14 +41,37 @@ single highest-value asset for an interview.
 
 ## 2. Deployment (blocked)
 
-### 2.1 Azure deployment
+### 2.1 Azure deployment — scoped, awaiting subscription
+
 **Why:** A live URL is the difference between "impressive code" and
-"impressive product".
-**Blocked on:** No Azure subscription. Check Azure for Students eligibility
-(requires school email) or save for a paid tier.
-**Scope when unblocked:** Bicep template for App Service + SQL + Static Web
-App; deploy job in `.github/workflows/ci.yml`.
-**Effort:** 2 sessions.
+"impressive product". A public URL is currently served via Cloudflare
+Tunnel (see README "Live Demo"); Azure will replace the tunnel with a
+permanent hosted deployment.
+
+**Blocked on:** Azure subscription + `az login`. Check Azure for Students
+eligibility (requires school email) or save for a paid tier.
+
+**Scope when unblocked:**
+
+| Piece | Azure service | Notes |
+|---|---|---|
+| API | Container Apps or App Service (Linux) | Reuse `docker/Dockerfile.api` |
+| Worker | Container App (background) | Reuse `docker/Dockerfile.worker` |
+| Database | Azure SQL (Basic tier) | EF Core migrations already exist |
+| Blob storage | Storage Account | Replaces Azurite |
+| Secrets | Key Vault | Connection strings + JWT signing key |
+| Frontend | Static Web Apps | Build `web/` -> SWA |
+| Observability | Application Insights | Wire OpenTelemetry exporter |
+| Registry | Azure Container Registry | Host API/Worker images |
+| CI/CD | GitHub Actions + OIDC | Federated creds, no stored secrets |
+| IaC | `infrastructure/main.bicep` | `infrastructure/` folder reserved for this |
+
+**Cost (demo):** ~$10-25/mo, or $0 if torn down after screenshots.
+Container Apps scale-to-zero; SQL Basic ~$5/mo; Static Web Apps free tier.
+
+**Effort:** 6-11 hours total (first manual deploy, then Bicep codification,
+then CI deploy job).
+
 **Source:** Audit FINDING-4.4.
 
 ### 2.2 Alternative: Render / Railway deployment

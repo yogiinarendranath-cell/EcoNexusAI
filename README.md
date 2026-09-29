@@ -1,4 +1,4 @@
-﻿# EcoNexus AI
+# EcoNexus AI
 
 > **AI-Powered Smart Waste & Recycling Network** â€” a cloud-native platform that connects IoT-instrumented waste stations, predictive analytics, intelligent collection routing, citizen engagement, and recycling operations through an event-driven architecture.
 
@@ -340,7 +340,8 @@ Full OpenAPI spec at `/scalar/v1` when running locally.
 - Predictive Fill-Level Forecasting (linear regression + UI chart)
 
 **In Progress:**
-- CI/CD pipeline + Azure deployment
+- Azure deployment — scoped in [docs/backlog.md](docs/backlog.md) §2.1;
+  awaiting subscription. Public URL currently via Cloudflare Tunnel.
 - Application-layer unit-test coverage expansion
 
 **Planned:**
