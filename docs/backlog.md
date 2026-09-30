@@ -18,7 +18,8 @@ surfaces as "HTTP 500", not "ScheduleJobHandler threw on capacity overflow".
 Focused unit tests give precise failure signals and pin the branches.
 
 **Status as of 2026-09-30:**
-  - Application line-rate: 29.74% (baseline) -> ~37% (estimated)
+  - Application line-rate:   29.74% (baseline) -> 35.67% (measured)
+  - Application branch-rate: 33.84% (baseline) -> 41.53% (measured)
   - 14 of 30 handlers now have dedicated unit-test files
   - 4 new test files this session:
       - `CreateVehicleHandler`          (6 test cases)
