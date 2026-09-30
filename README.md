@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/branding/logo.png" alt="EcoNexus AI" width="260" />
+</p>
+
 # EcoNexus AI
 
 > **AI-Powered Smart Waste & Recycling Network** â€” a cloud-native platform that connects IoT-instrumented waste stations, predictive analytics, intelligent collection routing, citizen engagement, and recycling operations through an event-driven architecture.
