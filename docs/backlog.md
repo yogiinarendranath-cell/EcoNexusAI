@@ -18,26 +18,27 @@ surfaces as "HTTP 500", not "ScheduleJobHandler threw on capacity overflow".
 Focused unit tests give precise failure signals and pin the branches.
 
 **Status as of 2026-09-30:**
-  - Application line-rate:   29.74% (baseline) -> 35.67% (measured)
-  - Application branch-rate: 33.84% (baseline) -> 41.53% (measured)
-  - 14 of 30 handlers now have dedicated unit-test files
-  - 4 new test files this session:
+  - Application line-rate:   29.74% (baseline) -> 36.36% (measured)
+  - Application branch-rate: 33.84% (baseline) -> 43.07% (measured)
+  - 15 of 30 handlers now have dedicated unit-test files
+  - 5 new test files this session:
       - `CreateVehicleHandler`          (6 test cases)
       - `UpdateStationHandler`          (9 test cases)
       - `DeleteStationHandler`          (4 test cases)
       - `AdvanceIntakeHandler`         (16 test cases)
-  - 35 new test cases; unit suite 341 -> 376
+      - `GetJobByIdHandler`           (3 test cases)
+  - 38 new test cases; unit suite 341 -> 379
 
-**Handlers with a dedicated unit-test file (14):**
+**Handlers with a dedicated unit-test file (15):**
   AdvanceIntake, AskAssistant, ClassifyWaste, CreateStation,
-  CreateVehicle, DeleteStation, FileReport, ListStations,
+  CreateVehicle, DeleteStation, FileReport, GetJobById, ListStations,
   PreviewRoute, RecordStationReading, RecordStationVisit,
   RedeemReward, ScheduleJob, UpdateStation
 
-**Handlers still without a dedicated unit-test file (16):**
+**Handlers still without a dedicated unit-test file (15):**
   Citizen:   GetCitizenProfile, ListClassifications, ListMyReports,
              ListPointTransactions, ListRewards
-  Jobs:      GetJobById, ListJobs
+  Jobs:      ListJobs
   Vehicles:  ListVehicles
   Recycling: CreateFacility, GetFacilityById, ListFacilities,
              RecordIntake
