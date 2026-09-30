@@ -12,15 +12,46 @@ The goal is that the top of this file is *always* actionable.
 
 ## 1. Near-term (next 1–2 sessions)
 
-### 1.1 Application-layer handler unit tests (Tier 2)
-**Why:** Unit-test coverage of `EcoNexus.Application` is ~5%. Integration
-tests exercise handlers end-to-end but a failure surfaces as "HTTP 500" not
-"ScheduleJobHandler threw on capacity overflow".
-**Scope:** ~7 high-branch handlers: `ScheduleJobHandler`,
-`PreviewRouteHandler`, `RecordStationVisitHandler`, `RedeemRewardHandler`,
-`AskAssistantHandler`, `ClassifyWasteHandler`, `FileReportHandler`.
-**Effort:** 1 session (~30 tests).
-**Source:** Audit FINDING-3.1 (remaining gap after Tier 1 backfill).
+### 1.1 Application-layer handler unit tests (Tier 2) — IN PROGRESS
+**Why:** Integration tests exercise handlers end-to-end but a failure
+surfaces as "HTTP 500", not "ScheduleJobHandler threw on capacity overflow".
+Focused unit tests give precise failure signals and pin the branches.
+
+**Status as of 2026-09-30:**
+  - Application line-rate: 29.74% (baseline) -> ~37% (estimated)
+  - 14 of 30 handlers now have dedicated unit-test files
+  - 4 new test files this session:
+      - `CreateVehicleHandler`          (6 test cases)
+      - `UpdateStationHandler`          (9 test cases)
+      - `DeleteStationHandler`          (4 test cases)
+      - `AdvanceIntakeHandler`         (16 test cases)
+  - 35 new test cases; unit suite 341 -> 376
+
+**Handlers with a dedicated unit-test file (14):**
+  AdvanceIntake, AskAssistant, ClassifyWaste, CreateStation,
+  CreateVehicle, DeleteStation, FileReport, ListStations,
+  PreviewRoute, RecordStationReading, RecordStationVisit,
+  RedeemReward, ScheduleJob, UpdateStation
+
+**Handlers still without a dedicated unit-test file (16):**
+  Citizen:   GetCitizenProfile, ListClassifications, ListMyReports,
+             ListPointTransactions, ListRewards
+  Jobs:      GetJobById, ListJobs
+  Vehicles:  ListVehicles
+  Recycling: CreateFacility, GetFacilityById, ListFacilities,
+             RecordIntake
+  Stations:  Events/WasteStationFillLevelChanged, ForecastStationFillLevel,
+             GetStationById, ListStationReadings
+
+**Approach:** read the handler source -> read the domain it touches ->
+read the repository interface -> write tests covering every branch ->
+verify filtered then full suite -> commit. One handler per commit.
+
+**Effort:** ~10 minutes per simple handler (3-6 tests); ~30 minutes
+for state machines (10-16 tests). Estimated 2-3 sessions for the
+remaining 16.
+
+**Source:** Audit FINDING-3.1.
 
 ### 1.2 Architecture test expansion
 **Why:** The current 8 architecture tests only enforce dependency direction.
