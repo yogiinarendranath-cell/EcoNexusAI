@@ -179,6 +179,24 @@ style with Added / Changed / Fixed / Removed).
 
 ---
 
+### 6.4 FacilityIntake.AdvanceTo — unreachable terminal-stage branch
+
+`AdvanceTo` checks the backward transition before the terminal-stage guard.
+Because `Landfilled(4)` is the highest enum value, any other target from
+`Landfilled` fails the backward check first. The `Stage == Landfilled`
+clause of the terminal-stage guard is therefore unreachable.
+
+Two clean options:
+  a. Reorder — check the terminal guard before the backward guard.
+  b. Remove the unreachable `Landfilled` case from the terminal guard.
+
+Not a functional bug: `Landfilled` is a dead-end either way; the exception
+message just says "backwards" instead of "terminal" in that case. Cosmetic.
+
+Source: `AdvanceIntakeHandlerTests.Handle_AdvanceFromLandfilled_ThrowsBackwardsException`.
+
+---
+
 ## Notes
 
 - **Won't do (for now):** microservices split. Modular monolith remains the
