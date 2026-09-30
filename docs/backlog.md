@@ -18,30 +18,33 @@ surfaces as "HTTP 500", not "ScheduleJobHandler threw on capacity overflow".
 Focused unit tests give precise failure signals and pin the branches.
 
 **Status as of 2026-09-30:**
-  - Application line-rate:   29.74% (baseline) -> 36.36% (measured)
-  - Application branch-rate: 33.84% (baseline) -> 43.07% (measured)
-  - 15 of 30 handlers now have dedicated unit-test files
-  - 5 new test files this session:
+  - Application line-rate:   29.74% (baseline) -> 44.16% (measured)
+  - Application branch-rate: 33.84% (baseline) -> 44.61% (measured)
+  - 20 of 30 handlers now have dedicated unit-test files
+  - 10 new test files this session:
       - `CreateVehicleHandler`          (6 test cases)
       - `UpdateStationHandler`          (9 test cases)
       - `DeleteStationHandler`          (4 test cases)
       - `AdvanceIntakeHandler`         (16 test cases)
       - `GetJobByIdHandler`           (3 test cases)
-  - 38 new test cases; unit suite 341 -> 379
+      - `ListVehiclesHandler`         (3 test cases)
+      - `ListJobsHandler`             (4 test cases)
+      - `ListFacilitiesHandler`       (4 test cases)
+      - `GetFacilityByIdHandler`      (5 test cases)
+      - `ListRewardsHandler`          (4 test cases)
+  - 58 new test cases; unit suite 341 -> 399
 
-**Handlers with a dedicated unit-test file (15):**
+**Handlers with a dedicated unit-test file (20):**
   AdvanceIntake, AskAssistant, ClassifyWaste, CreateStation,
-  CreateVehicle, DeleteStation, FileReport, GetJobById, ListStations,
+  CreateVehicle, DeleteStation, FileReport, GetFacilityById, GetJobById,
+  ListFacilities, ListJobs, ListRewards, ListStations, ListVehicles,
   PreviewRoute, RecordStationReading, RecordStationVisit,
   RedeemReward, ScheduleJob, UpdateStation
 
-**Handlers still without a dedicated unit-test file (15):**
+**Handlers still without a dedicated unit-test file (10):**
   Citizen:   GetCitizenProfile, ListClassifications, ListMyReports,
-             ListPointTransactions, ListRewards
-  Jobs:      ListJobs
-  Vehicles:  ListVehicles
-  Recycling: CreateFacility, GetFacilityById, ListFacilities,
-             RecordIntake
+             ListPointTransactions
+  Recycling: CreateFacility, RecordIntake
   Stations:  Events/WasteStationFillLevelChanged, ForecastStationFillLevel,
              GetStationById, ListStationReadings
 
