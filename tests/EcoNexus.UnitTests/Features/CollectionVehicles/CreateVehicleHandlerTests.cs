@@ -119,7 +119,7 @@ public sealed class CreateVehicleHandlerTests
     }
 
     [Fact]
-    public async Task Handle_NegativeCapacity_ThrowsArgumentException()
+    public async Task Handle_NegativeCapacity_ThrowsArgumentOutOfRangeException()
     {
         _repository
             .RegistrationNumberExistsAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -129,7 +129,10 @@ public sealed class CreateVehicleHandlerTests
             RegistrationNumber: "MH-12-AB-1234",
             CapacityKilograms: -100);
 
-        await Assert.ThrowsAsync<ArgumentException>(() =>
+        // Weight.FromKilograms throws ArgumentOutOfRangeException for negative
+        // values. Assert the exact type — xUnit's ThrowsAsync does not accept
+        // derived exception types.
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
             _handler.Handle(new CreateVehicleCommand(request), CancellationToken.None));
 
         await _repository
