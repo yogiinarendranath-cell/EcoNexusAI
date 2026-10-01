@@ -12,55 +12,57 @@ The goal is that the top of this file is *always* actionable.
 
 ## 1. Near-term (next 1–2 sessions)
 
-### 1.1 Application-layer handler unit tests (Tier 2) — IN PROGRESS
+### 1.1 Application-layer handler unit tests (Tier 2) — COMPLETE
 **Why:** Integration tests exercise handlers end-to-end but a failure
 surfaces as "HTTP 500", not "ScheduleJobHandler threw on capacity overflow".
 Focused unit tests give precise failure signals and pin the branches.
 
-**Status as of 2026-10-01:**
-  - Application line-rate:   29.74% (baseline) -> 59.07% (measured)
-  - Application branch-rate: 33.84% (baseline) -> 67.69% (measured)
-  - 28 of 30 handlers now have dedicated unit-test files
-  - 18 new test files this session:
-      - `CreateVehicleHandler`          (6 test cases)
-      - `UpdateStationHandler`          (9 test cases)
-      - `DeleteStationHandler`          (4 test cases)
-      - `AdvanceIntakeHandler`         (16 test cases)
-      - `GetJobByIdHandler`             (3 test cases)
-      - `ListVehiclesHandler`           (3 test cases)
-      - `ListJobsHandler`               (4 test cases)
-      - `ListFacilitiesHandler`         (4 test cases)
-      - `GetFacilityByIdHandler`        (5 test cases)
-      - `ListRewardsHandler`            (4 test cases)
-      - `GetCitizenProfileHandler`      (5 test cases)
-      - `ListClassificationsHandler`    (4 test cases)
-      - `ListMyReportsHandler`          (4 test cases)
-      - `ListPointTransactionsHandler`  (7 test cases)
-      - `GetStationByIdHandler`         (4 test cases)
-      - `ListStationReadingsHandler`    (5 test cases)
-      - `CreateFacilityHandler`         (8 test cases)
-      - `RecordIntakeHandler`           (7 test cases)
-  - 102 new test cases; unit suite 341 -> 443
+**Status as of 2026-10-01 — COMPLETE:**
+  - Application line-rate:   29.74% (baseline) -> 62.66% (measured)
+  - Application branch-rate: 33.84% (baseline) -> 71.53% (measured)
+  - 30 of 30 handlers have dedicated unit-test files
+  - 20 new test files this session:
+      - `CreateVehicleHandler`           (6 test cases)
+      - `UpdateStationHandler`           (9 test cases)
+      - `DeleteStationHandler`           (4 test cases)
+      - `AdvanceIntakeHandler`          (16 test cases)
+      - `GetJobByIdHandler`              (3 test cases)
+      - `ListVehiclesHandler`            (3 test cases)
+      - `ListJobsHandler`                (4 test cases)
+      - `ListFacilitiesHandler`          (4 test cases)
+      - `GetFacilityByIdHandler`         (5 test cases)
+      - `ListRewardsHandler`             (4 test cases)
+      - `GetCitizenProfileHandler`       (5 test cases)
+      - `ListClassificationsHandler`     (4 test cases)
+      - `ListMyReportsHandler`           (4 test cases)
+      - `ListPointTransactionsHandler`   (7 test cases)
+      - `GetStationByIdHandler`          (4 test cases)
+      - `ListStationReadingsHandler`     (5 test cases)
+      - `CreateFacilityHandler`          (8 test cases)
+      - `RecordIntakeHandler`            (7 test cases)
+      - `ForecastStationFillLevelHandler` (5 test cases)
+      - `WasteStationFillLevelChangedHandler` (4 test cases)
+  - 111 new test cases; unit suite 341 -> 452
 
-**Handlers with a dedicated unit-test file (28):**
+**All 30 handlers have a dedicated unit-test file:**
   AdvanceIntake, AskAssistant, ClassifyWaste, CreateFacility,
   CreateStation, CreateVehicle, DeleteStation, FileReport,
-  GetCitizenProfile, GetFacilityById, GetJobById, GetStationById,
-  ListClassifications, ListFacilities, ListJobs, ListMyReports,
-  ListPointTransactions, ListRewards, ListStationReadings,
-  ListStations, ListVehicles, PreviewRoute, RecordIntake,
-  RecordStationReading, RecordStationVisit, RedeemReward,
-  ScheduleJob, UpdateStation
+  ForecastStationFillLevel, GetCitizenProfile, GetFacilityById,
+  GetJobById, GetStationById, ListClassifications, ListFacilities,
+  ListJobs, ListMyReports, ListPointTransactions, ListRewards,
+  ListStationReadings, ListStations, ListVehicles, PreviewRoute,
+  RecordIntake, RecordStationReading, RecordStationVisit,
+  RedeemReward, ScheduleJob, UpdateStation,
+  WasteStationFillLevelChanged
 
-**Handlers still without a dedicated unit-test file (2):**
-  Stations:  Events/WasteStationFillLevelChanged, ForecastStationFillLevel
+**Follow-up work (future, not blocking):**
+  - §4.1 FluentAssertions migration — improves failure messages
+  - §4.2 Coverlet coverage threshold in CI — prevents regressions
+  - Integration tests continue to provide the end-to-end safety net.
 
-**Approach:** read the handler source -> read the domain it touches ->
-read the repository interface -> write tests covering every branch ->
+**Approach used:** read the handler source -> read the domain it touches
+-> read the repository interface -> write tests covering every branch ->
 verify filtered then full suite -> commit. One handler per commit.
-
-**Effort:** ~10 minutes per simple handler (3-6 tests); ~30 minutes
-for state machines (10-16 tests). 2 handlers remain.
 
 **Source:** Audit FINDING-3.1.
 ### 1.2 Architecture test expansion
