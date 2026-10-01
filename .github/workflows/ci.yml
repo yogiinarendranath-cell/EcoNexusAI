@@ -42,15 +42,28 @@ jobs:
       - name: Build
         run: dotnet build EcoNexus.slnx --no-restore --configuration Release
 
-      - name: Test
-        run: dotnet test EcoNexus.slnx --no-build --configuration Release --verbosity normal
+      - name: Test (unit with coverage threshold)
+        run: >
+          dotnet test tests/EcoNexus.UnitTests --no-build --configuration Release --verbosity normal
+          /p:CollectCoverage=true
+          /p:CoverletOutputFormat=cobertura
+          /p:CoverletOutput=./TestResults/coverage.cobertura.xml
+          /p:Include="[EcoNexus.Application]*"
+          /p:Threshold=60
+          /p:ThresholdType=line
+          /p:ThresholdStat=Total
+
+      - name: Test (architecture + integration)
+        run: >
+          dotnet test tests/EcoNexus.ArchitectureTests --no-build --configuration Release --verbosity normal
+          && dotnet test tests/EcoNexus.IntegrationTests --no-build --configuration Release --verbosity normal
 
       - name: Upload coverage (unit tests)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-unit
-          path: tests/EcoNexus.UnitTests/TestResults/**/coverage.cobertura.xml
+          path: tests/EcoNexus.UnitTests/TestResults/coverage.cobertura.xml
           if-no-files-found: ignore
           retention-days: 7
 
