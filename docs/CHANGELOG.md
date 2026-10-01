@@ -1,5 +1,97 @@
 # EcoNexus AI — Changelog
 
+## [Unreleased] - 2026-10-01
+
+### Added
+- 20 new Application-layer handler test files covering every handler (see backlog §1.1):
+  CreateVehicle, UpdateStation, DeleteStation, AdvanceIntake, GetJobById,
+  ListVehicles, ListJobs, ListFacilities, GetFacilityById, ListRewards,
+  GetCitizenProfile, ListClassifications, ListMyReports, ListPointTransactions,
+  GetStationById, ListStationReadings, CreateFacility, RecordIntake,
+  ForecastStationFillLevel, WasteStationFillLevelChanged
+- Footer component (Tailwind, no external UI kit) rendered on every route
+- Full favicon set (favicon.ico, 16/32 PNG, apple-touch-icon, android-chrome 192/512)
+- `docs/branding/logo.png` — official EcoNexus AI wordmark (512x279, 415 KB)
+- `AwesomeAssertions 9.4.0` adopted for future test files (Apache-2.0 community fork)
+- CI: coverlet.msbuild threshold of 60% on Application line coverage
+
+### Changed
+- README: test badge 356 -> 452; author hero image; Scalar references
+- `web/index.html`: real title, description, theme-color, favicon links
+- `web/src/App.tsx`: wraps `<Routes>` in a fragment to render `<Footer />`
+- Landing page: removed "Step 9.5c" dev-note from the public view
+
+### Fixed
+- `web/vite.config.ts`: allow Cloudflare tunnel Host headers; correct `/api` proxy target
+
+### Removed
+- Legacy `web/public/favicon.svg` (Vite placeholder)
+
+---
+
+## [v0.15.17-step16-scope] - 2026-09-29
+
+### Changed
+- `docs/backlog.md` §2.1: Azure deployment fully scoped — service list, cost estimate, effort estimate, "awaiting subscription"
+- README Roadmap: Azure entry clarified; notes Cloudflare Tunnel as the current public-URL substitute
+
+---
+
+## [v0.15.16-live-demo] - 2026-09-29
+
+### Added
+- README "Live Demo" section with a Cloudflare quick-tunnel URL
+
+### Fixed
+- `web/vite.config.ts`: `host: true` + `allowedHosts: ['.trycloudflare.com']` (Vite 403'd tunnel Host headers)
+
+---
+
+## [v0.15.15-readme-refresh] - 2026-09-29
+
+### Changed
+- README: test badge and counts corrected (356 -> 411; arch 8 -> 14; unit 194 -> 341)
+- README: Swagger references replaced with Scalar (`/scalar/v1`)
+
+---
+
+## [v0.15.14-visit-date-fix] - 2026-09-29
+
+### Fixed
+- `RecordStationVisitHandler` used `DateTimeOffset.UtcNow` for the transaction's `OccurredAt`, while the domain dedup compared `OccurredAt.Date` to the client-supplied `VisitDate`. Once the calendar day rolled, the "one visit per station per calendar day" rule silently failed. Fix: derive `occurredAt` from `VisitDate`.
+
+---
+
+## [v0.15.13-arch-gif] - 2026-09-28
+
+### Added
+- 6 new architecture tests (8 -> 14 total)
+- README Visual Demo section: `docs/demos/app-demo.mp4`
+
+---
+
+## [v0.15.12-app-tests] - 2026-09-28
+
+### Added
+- Tier-2 Application handler tests: 8 new test files (~100 tests)
+
+### Changed
+- Application line coverage 5.4% -> 29.6%
+
+---
+
+## [v0.15.11-docs] - 2026-09-28
+
+### Added
+- PRD v0.2 (Approved)
+- 10 new ADRs (0006-0015)
+- Expanded `docs/architecture/overview.md`
+- `docs/backlog.md`, `docs/audit/2026-09-27/`
+
+### Changed
+- PRD v0.1 Draft -> v0.2 Approved
+
+---
 ## [v0.15.10-docs-polish] - 2026-09-28
 
 ### Added
