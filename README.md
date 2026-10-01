@@ -8,7 +8,7 @@
 
 [![CI](https://github.com/yogiinarendranath-cell/EcoNexusAI/actions/workflows/ci.yml/badge.svg)](https://github.com/yogiinarendranath-cell/EcoNexusAI/actions/workflows/ci.yml)
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com)
-[![Tests](https://img.shields.io/badge/tests-411%20passing-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/tests-452%20passing-brightgreen)](#testing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 
 ## Live Demo
@@ -259,12 +259,12 @@ EcoNexusAI/
 
 ## Testing
 
-**411 tests, all green:**
+**452 tests, all green:**
 
 | Project | Count | Scope |
 |---|---|---|
 | EcoNexus.ArchitectureTests | 14 | Layer dependencies, project refs |
-| EcoNexus.UnitTests | 341 | Domain aggregates, value objects, handlers, services |
+| EcoNexus.UnitTests | 452 | Domain aggregates, value objects, handlers, services |
 | EcoNexus.IntegrationTests | 56 | HTTP endpoints, auth flows, real-time, caching, rate limiting |
 
 Run all tests:
@@ -342,11 +342,11 @@ Full OpenAPI spec at `/scalar/v1` when running locally.
 - IoT Station Simulator
 - Observability (OpenTelemetry + Serilog + Prometheus)
 - Predictive Fill-Level Forecasting (linear regression + UI chart)
+- Application-layer test coverage (30 of 30 handlers, 62.7% line / 71.5% branch)
 
 **In Progress:**
 - Azure deployment — scoped in [docs/backlog.md](docs/backlog.md) §2.1;
   awaiting subscription. Public URL currently via Cloudflare Tunnel.
-- Application-layer unit-test coverage expansion
 
 **Planned:**
 - Notification service (email/SMS)
