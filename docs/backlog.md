@@ -273,6 +273,33 @@ Source: `AdvanceIntakeHandlerTests.Handle_AdvanceFromLandfilled_ThrowsBackwardsE
 
 ---
 
+### 6.5 Track GitHub Actions runner deprecations
+**Why:** The CI workflow's actions (`actions/checkout@v4`,
+`actions/setup-dotnet@v4`, `actions/setup-node@v4`,
+`actions/upload-artifact@v4`, `actions/cache@v4`) all target Node.js 20,
+which is deprecated on GitHub runners. GitHub is currently forcing them
+onto Node.js 24 automatically, but future action versions will require
+`@v5+`.
+**Scope:**
+  - Bump each action to its next major version that ships Node-24-native.
+  - Verify the workflow stays green after the bump.
+**Effort:** 15 minutes.
+**Source:** CI run #63 (2026-10-01) — Node 20 deprecation notice.
+
+### 6.6 Ubuntu 26 migration window
+**Why:** GitHub's `ubuntu-latest` label migrates to Ubuntu 26 on
+**2026-10-19**. Behavior may shift (glibc, OpenSSL, default package
+versions, SQL Server container compatibility).
+**Scope:**
+  - Once Ubuntu 26 is available, run the workflow against it.
+  - Address compatibility issues that surface.
+  - Alternatively pin to `ubuntu-24.04` to defer — but the migration is
+    unavoidable long-term.
+**Effort:** 30 minutes.
+**Source:** CI run #63 (2026-10-01) — ubuntu-latest deprecation notice.
+
+---
+
 ## Notes
 
 - **Won't do (for now):** microservices split. Modular monolith remains the
