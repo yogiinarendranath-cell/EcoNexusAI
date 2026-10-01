@@ -17,47 +17,50 @@ The goal is that the top of this file is *always* actionable.
 surfaces as "HTTP 500", not "ScheduleJobHandler threw on capacity overflow".
 Focused unit tests give precise failure signals and pin the branches.
 
-**Status as of 2026-09-30:**
-  - Application line-rate:   29.74% (baseline) -> 44.16% (measured)
-  - Application branch-rate: 33.84% (baseline) -> 44.61% (measured)
-  - 20 of 30 handlers now have dedicated unit-test files
-  - 10 new test files this session:
+**Status as of 2026-10-01:**
+  - Application line-rate:   29.74% (baseline) -> 56.24% (measured)
+  - Application branch-rate: 33.84% (baseline) -> 64.61% (measured)
+  - 26 of 30 handlers now have dedicated unit-test files
+  - 16 new test files this session:
       - `CreateVehicleHandler`          (6 test cases)
       - `UpdateStationHandler`          (9 test cases)
       - `DeleteStationHandler`          (4 test cases)
       - `AdvanceIntakeHandler`         (16 test cases)
-      - `GetJobByIdHandler`           (3 test cases)
-      - `ListVehiclesHandler`         (3 test cases)
-      - `ListJobsHandler`             (4 test cases)
-      - `ListFacilitiesHandler`       (4 test cases)
-      - `GetFacilityByIdHandler`      (5 test cases)
-      - `ListRewardsHandler`          (4 test cases)
-  - 58 new test cases; unit suite 341 -> 399
+      - `GetJobByIdHandler`             (3 test cases)
+      - `ListVehiclesHandler`           (3 test cases)
+      - `ListJobsHandler`               (4 test cases)
+      - `ListFacilitiesHandler`         (4 test cases)
+      - `GetFacilityByIdHandler`        (5 test cases)
+      - `ListRewardsHandler`            (4 test cases)
+      - `GetCitizenProfileHandler`      (5 test cases)
+      - `ListClassificationsHandler`    (4 test cases)
+      - `ListMyReportsHandler`          (4 test cases)
+      - `ListPointTransactionsHandler`  (7 test cases)
+      - `GetStationByIdHandler`         (4 test cases)
+      - `ListStationReadingsHandler`    (5 test cases)
+  - 87 new test cases; unit suite 341 -> 428
 
-**Handlers with a dedicated unit-test file (20):**
+**Handlers with a dedicated unit-test file (26):**
   AdvanceIntake, AskAssistant, ClassifyWaste, CreateStation,
-  CreateVehicle, DeleteStation, FileReport, GetFacilityById, GetJobById,
-  ListFacilities, ListJobs, ListRewards, ListStations, ListVehicles,
+  CreateVehicle, DeleteStation, FileReport, GetCitizenProfile,
+  GetFacilityById, GetJobById, GetStationById, ListClassifications,
+  ListFacilities, ListJobs, ListMyReports, ListPointTransactions,
+  ListRewards, ListStationReadings, ListStations, ListVehicles,
   PreviewRoute, RecordStationReading, RecordStationVisit,
   RedeemReward, ScheduleJob, UpdateStation
 
-**Handlers still without a dedicated unit-test file (10):**
-  Citizen:   GetCitizenProfile, ListClassifications, ListMyReports,
-             ListPointTransactions
+**Handlers still without a dedicated unit-test file (4):**
   Recycling: CreateFacility, RecordIntake
-  Stations:  Events/WasteStationFillLevelChanged, ForecastStationFillLevel,
-             GetStationById, ListStationReadings
+  Stations:  Events/WasteStationFillLevelChanged, ForecastStationFillLevel
 
 **Approach:** read the handler source -> read the domain it touches ->
 read the repository interface -> write tests covering every branch ->
 verify filtered then full suite -> commit. One handler per commit.
 
 **Effort:** ~10 minutes per simple handler (3-6 tests); ~30 minutes
-for state machines (10-16 tests). Estimated 2-3 sessions for the
-remaining 16.
+for state machines (10-16 tests). 4 handlers remain.
 
 **Source:** Audit FINDING-3.1.
-
 ### 1.2 Architecture test expansion
 **Why:** The current 8 architecture tests only enforce dependency direction.
 We can assert naming conventions, namespace placement, and forbidden types
