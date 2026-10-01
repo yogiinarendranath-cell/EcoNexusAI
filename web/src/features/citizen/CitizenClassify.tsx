@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { classifyWaste, fetchClassifications } from './citizenClassifyApi';
 import type {
@@ -35,7 +35,7 @@ export default function CitizenClassify() {
     classify.mutate(imageUrl.trim());
   };
 
-  const usePreset = (url: string) => {
+  const applyPreset = (url: string) => {
     setImageUrl(url);
     classify.mutate(url);
   };
@@ -83,7 +83,7 @@ export default function CitizenClassify() {
             <button
               key={p.url}
               type="button"
-              onClick={() => usePreset(p.url)}
+              onClick={() => applyPreset(p.url)}
               disabled={classify.isPending}
               className="px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/50 text-xs text-slate-300 hover:border-emerald-500/60 hover:text-emerald-300 transition disabled:opacity-50"
             >

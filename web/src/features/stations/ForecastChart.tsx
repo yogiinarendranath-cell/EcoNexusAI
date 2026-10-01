@@ -1,4 +1,5 @@
-﻿import {
+import { useState } from "react";
+import {
     CartesianGrid,
     ComposedChart,
     Line,
@@ -27,7 +28,7 @@ type Point = {
 const MS_PER_HOUR = 3_600_000;
 
 export default function ForecastChart({ readings, forecast }: Props) {
-    const now = Date.now();
+    const [now] = useState(() => Date.now());
 
     const actualPoints: Point[] = readings.map((r) => ({
         t: new Date(r.recordedAt).getTime(),
