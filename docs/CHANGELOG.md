@@ -1,4 +1,22 @@
 # EcoNexus AI — Changelog
+All notable changes to this project are documented in this file.
+
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
+with these category headings, in this order:
+
+  ### Added      — new features, files, or public surfaces
+  ### Changed    — changes to existing behaviour or content
+  ### Fixed      — bug fixes
+  ### Removed    — removed features or files
+
+Each entry is grouped under a version-and-tag heading, newest first:
+
+  ## [vX.Y.Z-tag-name] - YYYY-MM-DD
+
+Unreleased work sits at the top under `## [Unreleased] - YYYY-MM-DD`
+until the next tag is cut, at which point it moves under its own
+version heading.
+
 
 ## [Unreleased] - 2026-10-01
 
