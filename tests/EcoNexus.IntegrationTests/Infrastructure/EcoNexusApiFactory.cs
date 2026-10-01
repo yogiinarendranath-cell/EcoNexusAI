@@ -1,4 +1,4 @@
-﻿using EcoNexus.Infrastructure.Identity;
+using EcoNexus.Infrastructure.Identity;
 using EcoNexus.Infrastructure.Identity.Seeding;
 using EcoNexus.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
@@ -36,7 +36,7 @@ public sealed class EcoNexusApiFactory : WebApplicationFactory<Program>, IAsyncL
 
         builder.UseSetting(
             "ConnectionStrings:Default",
-            $"Server=(localdb)\\MSSQLLocalDB;Database={_databaseName};Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+            BuildConnectionString(_databaseName));
 
         builder.UseSetting("Jwt:Issuer", "EcoNexus.Api.Tests");
         builder.UseSetting("Jwt:Audience", "EcoNexus.Client.Tests");
@@ -50,6 +50,23 @@ public sealed class EcoNexusApiFactory : WebApplicationFactory<Program>, IAsyncL
             services.RemoveAll<IHostedService>();
             services.RemoveAll<RoleSeeder>();
         });
+    }
+
+    /// <summary>
+    /// Builds the connection string for the test database.
+    /// When ECONEXUS_TEST_SQL_CONNECTION is set (CI, or macOS/Linux where
+    /// LocalDB does not exist), it is used as the base. Otherwise Windows
+    /// LocalDB is used for zero-configuration local development.
+    /// </summary>
+    private static string BuildConnectionString(string databaseName)
+    {
+        var overrideBase = Environment.GetEnvironmentVariable("ECONEXUS_TEST_SQL_CONNECTION");
+        if (!string.IsNullOrWhiteSpace(overrideBase))
+        {
+            return $"{overrideBase}Database={databaseName};";
+        }
+
+        return $"Server=(localdb)\\MSSQLLocalDB;Database={databaseName};Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
     }
 
     public async Task InitializeAsync()
