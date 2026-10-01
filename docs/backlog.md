@@ -18,10 +18,10 @@ surfaces as "HTTP 500", not "ScheduleJobHandler threw on capacity overflow".
 Focused unit tests give precise failure signals and pin the branches.
 
 **Status as of 2026-10-01:**
-  - Application line-rate:   29.74% (baseline) -> 56.24% (measured)
-  - Application branch-rate: 33.84% (baseline) -> 64.61% (measured)
-  - 26 of 30 handlers now have dedicated unit-test files
-  - 16 new test files this session:
+  - Application line-rate:   29.74% (baseline) -> 59.07% (measured)
+  - Application branch-rate: 33.84% (baseline) -> 67.69% (measured)
+  - 28 of 30 handlers now have dedicated unit-test files
+  - 18 new test files this session:
       - `CreateVehicleHandler`          (6 test cases)
       - `UpdateStationHandler`          (9 test cases)
       - `DeleteStationHandler`          (4 test cases)
@@ -38,19 +38,21 @@ Focused unit tests give precise failure signals and pin the branches.
       - `ListPointTransactionsHandler`  (7 test cases)
       - `GetStationByIdHandler`         (4 test cases)
       - `ListStationReadingsHandler`    (5 test cases)
-  - 87 new test cases; unit suite 341 -> 428
+      - `CreateFacilityHandler`         (8 test cases)
+      - `RecordIntakeHandler`           (7 test cases)
+  - 102 new test cases; unit suite 341 -> 443
 
-**Handlers with a dedicated unit-test file (26):**
-  AdvanceIntake, AskAssistant, ClassifyWaste, CreateStation,
-  CreateVehicle, DeleteStation, FileReport, GetCitizenProfile,
-  GetFacilityById, GetJobById, GetStationById, ListClassifications,
-  ListFacilities, ListJobs, ListMyReports, ListPointTransactions,
-  ListRewards, ListStationReadings, ListStations, ListVehicles,
-  PreviewRoute, RecordStationReading, RecordStationVisit,
-  RedeemReward, ScheduleJob, UpdateStation
+**Handlers with a dedicated unit-test file (28):**
+  AdvanceIntake, AskAssistant, ClassifyWaste, CreateFacility,
+  CreateStation, CreateVehicle, DeleteStation, FileReport,
+  GetCitizenProfile, GetFacilityById, GetJobById, GetStationById,
+  ListClassifications, ListFacilities, ListJobs, ListMyReports,
+  ListPointTransactions, ListRewards, ListStationReadings,
+  ListStations, ListVehicles, PreviewRoute, RecordIntake,
+  RecordStationReading, RecordStationVisit, RedeemReward,
+  ScheduleJob, UpdateStation
 
-**Handlers still without a dedicated unit-test file (4):**
-  Recycling: CreateFacility, RecordIntake
+**Handlers still without a dedicated unit-test file (2):**
   Stations:  Events/WasteStationFillLevelChanged, ForecastStationFillLevel
 
 **Approach:** read the handler source -> read the domain it touches ->
@@ -58,7 +60,7 @@ read the repository interface -> write tests covering every branch ->
 verify filtered then full suite -> commit. One handler per commit.
 
 **Effort:** ~10 minutes per simple handler (3-6 tests); ~30 minutes
-for state machines (10-16 tests). 4 handlers remain.
+for state machines (10-16 tests). 2 handlers remain.
 
 **Source:** Audit FINDING-3.1.
 ### 1.2 Architecture test expansion
