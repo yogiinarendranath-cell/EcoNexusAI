@@ -150,14 +150,37 @@ supported until at least X, deprecations announced Y months ahead").
 
 ## 4. Test quality
 
-### 4.1 FluentAssertions migration
-**Why:** Raw `Assert.Equal(x, y)` reads worse than `y.Should().Be(x)` and
-fails with less helpful messages.
-**Caution:** FluentAssertions 8.x requires a paid license for commercial use.
-Use 7.x or Shouldly instead.
-**Effort:** 1 session.
-**Source:** Audit FINDING-3.3.
+### 4.1 Adopt AwesomeAssertions for new tests (scope revised)
+**Why:** Assertion failure messages from raw xUnit `Assert.*` calls are
+terse ("Expected 5, Actual 3"). FluentAssertions-style `.Should()`
+assertions include the expression and more context.
 
+**Scope decision (2026-10-01):**
+  The original backlog entry proposed a full migration to
+  FluentAssertions. Two things changed:
+
+  1. FluentAssertions v8+ relicensed to a paid Community License for
+     commercial use. The Apache-2.0 community fork **AwesomeAssertions**
+     is the drop-in replacement (same `.Should()` API, same syntax).
+  2. The test suite now contains **861** raw `Assert.*` calls across
+     30 handler test files. A mechanical rewrite of 861 passing
+     assertions risks introducing silent test bugs (a mistranslated
+     assertion that still passes) with zero functional gain.
+
+**Revised scope:**
+  - Add AwesomeAssertions to the test project so new tests can use it.
+  - Do **not** rewrite existing tests. Existing `Assert.*` calls stay
+    as-is; they are accurate, readable, and green.
+  - New test files should use `.Should()` where it aids clarity.
+
+**Status:**
+  - `AwesomeAssertions 9.4.0` added to `Directory.Packages.props`.
+  - Referenced from `tests/EcoNexus.UnitTests/EcoNexus.UnitTests.csproj`.
+  - Build clean, 452/452 tests green.
+
+**Effort:** done (10 minutes). No further work required.
+
+**Source:** Audit FINDING-3.3 (revised).
 ### 4.2 Add `coverlet` threshold to CI
 **Why:** Prevent regressions in Domain coverage (currently 75.7%).
 **Scope:** `Directory.Build.props` `<Threshold>70</Threshold>`, CI fails if
