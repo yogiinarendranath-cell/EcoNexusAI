@@ -101,42 +101,42 @@ EcoNexus AI follows **Clean Architecture** with strict dependency rules enforced
 ```mermaid
 graph TB
     subgraph Clients
-        React[React + Vite Frontend]
-        Browser[Browser]
+        React["React + Vite Frontend"]
+        Browser["Browser"]
     end
 
-    subgraph Api[EcoNexus.Api]
-        Controllers[Controllers]
-        Middleware[Middleware: CORS / Auth / RateLimit / Exceptions]
+    subgraph Api["EcoNexus.Api"]
+        Controllers["Controllers"]
+        Middleware["Middleware: CORS / Auth / RateLimit / Exceptions"]
     end
 
-    subgraph Application[EcoNexus.Application]
-        MediatR[MediatR Pipeline - CQRS]
-        Handlers[Command and Query Handlers]
-        Validators[FluentValidation]
+    subgraph Application["EcoNexus.Application"]
+        MediatR["MediatR Pipeline - CQRS"]
+        Handlers["Command and Query Handlers"]
+        Validators["FluentValidation"]
     end
 
-    subgraph Domain[EcoNexus.Domain]
-        Aggregates[Entities and Aggregates]
-        VOs[Value Objects]
-        DomainEvents[Domain Events]
-        Services[Domain Services]
+    subgraph Domain["EcoNexus.Domain"]
+        Aggregates["Entities and Aggregates"]
+        VOs["Value Objects"]
+        DomainEvents["Domain Events"]
+        Services["Domain Services"]
     end
 
-    subgraph Infrastructure[EcoNexus.Infrastructure]
-        EFCore[EF Core - SQL Server]
-        Identity[JWT Identity - RBAC]
-        SignalR[SignalR Hub]
-        AI[AI Providers - Ollama / Mock]
-        Observability[OpenTelemetry - Serilog - Prometheus]
+    subgraph Infrastructure["EcoNexus.Infrastructure"]
+        EFCore["EF Core - SQL Server"]
+        Identity["JWT Identity - RBAC"]
+        SignalRHub["SignalR Hub"]
+        AI["AI Providers - Ollama / Mock"]
+        Observability["OpenTelemetry - Serilog - Prometheus"]
     end
 
-    subgraph Worker[EcoNexus.Worker]
-        IoTSim[IoT Station Simulator]
+    subgraph Worker["EcoNexus.Worker"]
+        IoTSim["IoT Station Simulator"]
     end
 
     React -->|HTTPS| Controllers
-    Browser -->|SignalR| SignalR
+    Browser -->|SignalR| SignalRHub
     Controllers --> MediatR
     MediatR --> Handlers
     Handlers --> Validators
@@ -145,7 +145,7 @@ graph TB
     Handlers --> EFCore
     Handlers --> AI
     IoTSim --> EFCore
-    EFCore --> SQL[(SQL Server)]
+    EFCore --> SQL[("SQL Server")]
 ```
 
 ### Dependency Rule (enforced by tests)
