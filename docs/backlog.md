@@ -302,7 +302,17 @@ onto Node.js 24 automatically, but future action versions will require
 **Effort:** 15 minutes.
 **Source:** CI run #63 (2026-10-01) — Node 20 deprecation notice.
 
-### 6.6 Ubuntu 26 migration window
+### 6.6 Ubuntu 26 migration window — VERIFIED COMPATIBLE (2026-10-02)
+
+**Result:** The CI workflow was probed on `ubuntu-26.04` (both jobs)
+via the temporary branch `test/ubuntu-26-compat`. The full pipeline
+ran green in 1m 44s — same duration window as the current
+`ubuntu-latest` runs. SQL Server service container, .NET runtime,
+and all 533 tests passed on Ubuntu 26.
+
+**Action taken:** none needed. When GitHub migrates the
+`ubuntu-latest` alias on 2026-10-19, the workflow will continue to
+work without change.
 **Why:** GitHub's `ubuntu-latest` label migrates to Ubuntu 26 on
 **2026-10-19**. Behavior may shift (glibc, OpenSSL, default package
 versions, SQL Server container compatibility).
