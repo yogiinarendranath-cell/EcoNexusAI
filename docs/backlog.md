@@ -65,12 +65,20 @@ Focused unit tests give precise failure signals and pin the branches.
 verify filtered then full suite -> commit. One handler per commit.
 
 **Source:** Audit FINDING-3.1.
-### 1.2 Architecture test expansion
-**Why:** The current 8 architecture tests only enforce dependency direction.
-We can assert naming conventions, namespace placement, and forbidden types
-(e.g. Domain must not reference `Microsoft.EntityFrameworkCore`).
-**Scope:** ~6 new tests using `NetArchTest.Rules`.
-**Effort:** 30 minutes.
+### 1.2 Architecture test expansion — DONE (2026-10-02)
+**Why:** Enforce not just dependency direction but naming, placement, shape,
+and forbidden references, so architecture claims stay true as the codebase grows.
+**Implemented:**
+  - `DependencyRulesTests.cs` (8 tests) — Domain, Application, Contracts
+    dependency direction.
+  - `ConventionTests.cs` (6 tests) — Domain purity (EF Core, ASP.NET),
+    handler/validator/controller naming, entities namespace.
+  - `LayeringAndShapeTests.cs` (11 tests, new) — Domain purity (MediatR,
+    Microsoft.Extensions.Logging, Serilog), DomainEvents/VO placement,
+    Command/Query feature-folder placement, aggregate sealing,
+    Application no-EF-Core-direct, Controllers no-persistence-direct.
+  - Total: 25 tests. All green on first run against existing code.
+**Effort:** done.
 **Source:** Audit FINDING-3.4.
 
 ### 1.3 Add a "Getting Started" video / GIF

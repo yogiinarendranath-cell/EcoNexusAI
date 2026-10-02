@@ -8,7 +8,7 @@
 
 [![CI](https://github.com/yogiinarendranath-cell/EcoNexusAI/actions/workflows/ci.yml/badge.svg)](https://github.com/yogiinarendranath-cell/EcoNexusAI/actions/workflows/ci.yml)
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com)
-[![Tests](https://img.shields.io/badge/tests-452%20passing-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/tests-533%20passing-brightgreen)](#testing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 
 ## Live Demo
@@ -269,11 +269,11 @@ EcoNexusAI/
 
 ## Testing
 
-**452 tests, all green:**
+**533 tests, all green:**
 
 | Project | Count | Scope |
 |---|---|---|
-| EcoNexus.ArchitectureTests | 14 | Layer dependencies, project refs |
+| EcoNexus.ArchitectureTests | 25 | Layer dependencies, naming, placement, shape, forbidden refs |
 | EcoNexus.UnitTests | 452 | Domain aggregates, value objects, handlers, services |
 | EcoNexus.IntegrationTests | 56 | HTTP endpoints, auth flows, real-time, caching, rate limiting |
 
