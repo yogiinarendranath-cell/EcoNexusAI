@@ -34,7 +34,7 @@ chart → back to the list. Recorded on 2026-09-28.*
 
 ### Fill-Level Forecast Chart
 
-![Fill-level forecast chart for station ST-001](docs/screenshots/forecast-chart.png)
+![Fill-level forecast chart for station ST-001](docs/screenshots/station-detail-forecast.png)
 
 **What you are looking at:** the station-detail page for `ST-001`. The
 green line shows actual fill-level readings from the IoT sensors; the
@@ -47,6 +47,20 @@ number of samples used.
 This feature is served by `GET /api/v1/stations/{id}/forecast` and backed
 by the pure domain service `FillLevelForecaster` (Ordinary Least Squares
 on `(hours, fillPercent)`, confidence from R² and sample size).
+
+### Application Screenshots
+
+![EcoNexus AI landing page](docs/screenshots/landing-page.png)
+
+*Landing page — hero, tagline, and live network stats.*
+
+![Stations list](docs/screenshots/stations-list.png)
+
+*Stations list — sorted by fill level, critical stations first.*
+
+![Vehicles list](docs/screenshots/vehicles-list.png)
+
+*Collection vehicles — fleet registry.*
 
 ---
 
