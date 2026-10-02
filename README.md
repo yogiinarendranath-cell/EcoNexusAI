@@ -332,7 +332,9 @@ Full OpenAPI spec at `/scalar/v1` when running locally.
 
 - [Product Requirements Document](docs/PRD.md)
 - [Architecture Overview](docs/architecture/overview.md)
-- [Architecture Decision Records](docs/adr/)
+- [Architecture Decision Records](docs/adr/) — including [ADR-0016 Event-Driven Architecture](docs/adr/0016-event-driven-architecture.md)
+- [Testing Strategy](docs/testing/strategy.md)
+- [API Versioning Policy](docs/api/versioning.md)
 - [Changelog](docs/CHANGELOG.md)
 - [Backlog](docs/backlog.md)
 

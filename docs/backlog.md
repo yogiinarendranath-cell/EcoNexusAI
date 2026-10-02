@@ -135,23 +135,31 @@ then CI deploy job).
 
 ## 3. Documentation improvements
 
-### 3.1 ADR for event-driven architecture
+### 3.1 ADR for event-driven architecture — DONE (2026-10-02)
 **Why:** We have 12 domain events, a dispatcher, and pipeline behaviours —
 but no ADR explaining *why* we chose domain events over service-to-service
 calls.
-**Effort:** 30 minutes.
+**Delivered:** [ADR-0016](../adr/0016-event-driven-architecture.md) records
+the decision, alternatives considered, and consequences (post-commit dispatch,
+`DomainEventNotification<T>` wrapper, no retry/dead-letter today).
+**Effort:** done.
 **Source:** Self-identified.
 
-### 3.2 Test strategy document
+### 3.2 Test strategy document — DONE (2026-10-02)
 **Why:** A short doc explaining the three test projects, what each covers,
 and when to add which kind of test.
-**Effort:** 30 minutes.
+**Delivered:** [docs/testing/strategy.md](../testing/strategy.md) — three-tier
+breakdown, directory layout, naming conventions, mocking discipline, test
+isolation, CI enforcement, and what is deliberately not tested.
+**Effort:** done.
 **Source:** Self-identified.
 
-### 3.3 API versioning policy
+### 3.3 API versioning policy — DONE (2026-10-02)
 **Why:** `ADR-0014` explains the *mechanism* but not the *policy* (e.g. "v1
 supported until at least X, deprecations announced Y months ahead").
-**Effort:** 20 minutes.
+**Delivered:** [docs/api/versioning.md](../api/versioning.md) — current state,
+breaking-change list, version lifecycle, deprecation policy, client contract.
+**Effort:** done.
 **Source:** Self-identified.
 
 ---
