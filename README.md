@@ -371,6 +371,6 @@ See [docs/backlog.md](docs/backlog.md) for the current prioritized queue.
 
 ## Author
 
-**Narendra N** â€” [@yogiinarendranath-cell](https://github.com/yogiinarendranath-cell)
+**Narendra Nath** — [@yogiinarendranath-cell](https://github.com/yogiinarendranath-cell)
 
 Built as a portfolio project demonstrating production-grade .NET architecture.
