@@ -15,7 +15,7 @@ namespace EcoNexus.Infrastructure.Persistence;
 public sealed class EcoNexusDbContextFactory : IDesignTimeDbContextFactory<EcoNexusDbContext>
 {
     private const string DefaultConnectionString =
-        "Server=(localdb)\\MSSQLLocalDB;Database=EcoNexus;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
+        "Server=localhost;Database=EcoNexusAIDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
 
     public EcoNexusDbContext CreateDbContext(string[] args)
     {
