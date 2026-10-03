@@ -146,7 +146,7 @@ builder.Services.AddSignalR();
 // Hosted services
 // ============================================================
 builder.Services.AddHostedService<RoleSeeder>();
-
+builder.Services.AddHostedService<UserSeeder>();
 // ============================================================
 // Controllers
 // ============================================================
